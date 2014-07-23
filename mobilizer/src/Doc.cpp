@@ -32,7 +32,12 @@
 Doc::Doc( QWidget * parent )
 	: TextEdit( parent )
 {
+#ifdef Q_OS_WIN32
+	document()->setDefaultFont( QFont("Times New Roman", 12 ) );
+#else
 	document()->setDefaultFont( QFont("Liberation Serif", 12 ) );
+#endif
+
 }
 
 void
