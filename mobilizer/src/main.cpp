@@ -51,7 +51,7 @@ main( int argc, char ** argv )
 {
 	QApplication app( argc, argv );
 
-	app.setApplicationName("mobilezer");
+	app.setApplicationName("mobilizer");
 	app.setApplicationVersion( VERSION );
 	app.setOrganizationName("Nordavia-RA");
 

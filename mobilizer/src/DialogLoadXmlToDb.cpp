@@ -43,7 +43,7 @@ DialogLoadXmlToDb::createWidgets()
 	m_editPath = new QLineEdit( this );
 
 	QToolButton * buttonPath = new QToolButton( this );
-	buttonPath->setIcon( QIcon::fromTheme("folder-open", QIcon() ) );
+	buttonPath->setIcon( QIcon::fromTheme("folder-open", QIcon(":/folder-open.png") ) );
 	connect( buttonPath, SIGNAL( clicked() ), SLOT( openXmlFile() ) );
 
 	QHBoxLayout * layoutPath = new QHBoxLayout();

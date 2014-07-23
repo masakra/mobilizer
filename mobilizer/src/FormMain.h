@@ -57,8 +57,12 @@ class FormMain : public QMainWindow
 				* m_actionDocOrder,
 				* m_actionDocNote;
 
-		QMenu * m_menuActions;
-		QAction * m_gridWidgetMenuAction;
+		QMenu * m_menuFile,
+			  * m_menuActions;
+
+		QAction * m_gridWidgetMenuAction,
+				* m_actionPrint,
+				* m_actionToPdf;
 
 	private Q_SLOTS:
 		void newNumber();
@@ -66,6 +70,8 @@ class FormMain : public QMainWindow
 		void loadXmlToDb();
 		void docOrder();
 		void docNote();
+		void aboutToShowMenuFile();
+		void aboutToHideMenuFile();
 		void aboutToShowMenuActions();
 		void aboutToHideMenuActions();
 		void about();

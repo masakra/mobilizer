@@ -8,6 +8,7 @@ if [ ${OS} ]	# На Win* выдает что-то типа Windows_NT, на др
 then
 	GMAKE="/c/MinGW/bin/mingw32-make";
 	QMAKE="/c/Qt/4.8.4/bin/qmake";
+	LFLAGS="-enable-auto-import -Wl"
 	LIBS="-L../../naragui/release \
 		-L../../narapg/release \
 		-lnaragui \
@@ -51,6 +52,10 @@ then
 	# libraries
 	echo "LIBS += ${LIBS}" >> ${TARGET}.pro;
 	echo "libraries += ${LIBS}";
+	# LFLAGS
+	echo "QMAKE_LFLAGS= ${LFLAGS}" >> ${TARGET}.pro;
+	echo "QMAKE_LFLAGS= ${LFLAGS}";
+
 
 	${QMAKE} ${SPEC}
 else

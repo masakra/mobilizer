@@ -39,7 +39,7 @@
 #include "WidgetNumber.h"
 
 FormMain::FormMain()
-	: QMainWindow(), m_gridWidgetMenuAction( 0 )
+	: QMainWindow(), m_gridWidgetMenuAction( 0 ), m_actionPrint( 0 ), m_actionToPdf( 0 )
 {
 	setWindowIcon( QIcon(":/main_icon.png") );
 	createActions();
@@ -93,11 +93,6 @@ FormMain::createActions()
 	m_actionDocNote = new QAction( QIcon(":/doc_note.png"), "Служебная записка", this );
 	m_actionDocNote->setShortcut( Qt::CTRL + Qt::Key_U );
 	connect( m_actionDocNote, SIGNAL( triggered() ), SLOT( docNote() ) );
-
-	QAction * actionExit = new QAction("Вы&ход", this );
-	actionExit->setIcon( QIcon::fromTheme("application-exit", QIcon(":/exit.png") ) );
-	actionExit->setShortcut( QKeySequence::Quit );
-	connect( actionExit, SIGNAL( triggered() ), SLOT( close() ) );
 }
 
 void
@@ -124,9 +119,17 @@ FormMain::newNumber()
 void
 FormMain::createMainMenu()
 {
-	QMenu * menuFile = menuBar()->addMenu("&Файл");
-	menuFile->addAction( QIcon::fromTheme("application-exit", QIcon(":/exit.png") ),
-			"Вы&ход", this, SLOT( close() ), QKeySequence::Quit );
+	m_menuFile = menuBar()->addMenu("&Файл");
+	m_menuFile->addAction( QIcon::fromTheme("application-exit", QIcon(":/exit.png") ),
+			"Вы&ход", this, SLOT( close() ),
+#ifdef Q_OS_WIN32
+			Qt::CTRL + Qt::Key_Q
+#else
+			QKeySequence::Quit
+#endif
+			);
+	connect( m_menuFile, SIGNAL( aboutToShow() ), SLOT( aboutToShowMenuFile() ) );
+	connect( m_menuFile, SIGNAL( aboutToHide() ), SLOT( aboutToHideMenuFile() ) );
 
 	QMenu * menuView = menuBar()->addMenu("&Вид");
 
@@ -224,5 +227,31 @@ FormMain::about()
 		            .arg( qApp->applicationVersion() )
 		            .arg( QChar( 0x00A9 ) ) // (c)
 	        );
+}
+
+void
+FormMain::aboutToShowMenuFile()
+{
+	TextEdit * textEdit = qobject_cast< TextEdit * >( m_tabWidget->currentWidget() );
+
+	if ( textEdit ) {
+		QAction * firstAction = m_menuFile->actions().at( 0 );
+		m_menuFile->insertAction( firstAction, m_actionPrint = textEdit->actionPrint() );
+		m_menuFile->insertAction( firstAction, m_actionToPdf = textEdit->actionToPdf() );
+	}
+}
+
+void
+FormMain::aboutToHideMenuFile()
+{
+	if ( m_actionPrint ) {
+		m_menuFile->removeAction( m_actionPrint );
+		m_actionPrint = 0;
+	}
+
+	if ( m_actionToPdf ) {
+		m_menuFile->removeAction( m_actionToPdf );
+		m_actionToPdf = 0;
+	}
 }
 

@@ -56,6 +56,10 @@ class WidgetNumber : public QWidget
 		void setMonth( const Month & month );
 
 		Month month() const;
+
+		QAction * actionPrint() const;
+
+		QAction * actionSaveToPdf() const;
 };
 
 #endif

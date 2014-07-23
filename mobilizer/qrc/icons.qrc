@@ -7,6 +7,8 @@
 	<file alias="mobile_phone.png">icons/mobile_phone_16x16.png</file>
 	<file alias="doc_order.png">icons/doc_order_64x64.png</file>
 	<file alias="doc_note.png">icons/doc_note_64x64.png</file>
+	<file alias="exit.png">icons/application-exit_16x16.png</file>
+	<file alias="folder-open.png">icons/folder-open_16x16.png</file>
  </qresource>
 </RCC>
 
