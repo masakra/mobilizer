@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+ <qresource>
+	<file alias="nordavia.png">images/nordavia_transparent.png</file>
+	<file alias="nordavia_for_html.png">images/nordavia_for_html_283x72.png</file>
+ </qresource>
+</RCC>

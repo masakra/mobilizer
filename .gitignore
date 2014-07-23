@@ -1,0 +1,9 @@
+Makefile
+moc_*.o
+moc_*.cpp
+*.o
+qrc_*.cpp
+.*.swp
+*.pro
+
+

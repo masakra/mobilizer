@@ -1,0 +1,12 @@
+<!DOCTYPE RCC><RCC version="1.0">
+ <qresource>
+	<file alias="main_icon.png">icons/main_icon_64x64.png</file>
+	<file alias="new_number.png">icons/mobile_phone_add_64x64.png</file>
+	<file alias="xml_to_db.png">icons/xml_to_db_64x64.png</file>
+	<file alias="ruble.png">icons/ruble_16x16.png</file>
+	<file alias="mobile_phone.png">icons/mobile_phone_16x16.png</file>
+	<file alias="doc_order.png">icons/doc_order_64x64.png</file>
+	<file alias="doc_note.png">icons/doc_note_64x64.png</file>
+ </qresource>
+</RCC>
+
