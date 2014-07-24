@@ -24,28 +24,69 @@
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
 
-/*! \class Doc
- *
- * \brief 
- */
+#include "DialogDoc.h"
 
-#ifndef DOC_H
-#define DOC_H
+#include "EditMonth.h"
 
+#include <QtGui>
 #include <NaraGui>
+#include "SpinLimit.h"
 
-class Month;
-
-class Doc : public TextEdit
+DialogDoc::DialogDoc( QWidget * parent, const QAction * action )
+	: QDialog( parent )
 {
-	protected:
-		QString detailTable( const Month & month, qreal thresh ) const;
+	if ( action ) {
+		setWindowIcon( action->icon() );
+		setWindowTitle( action->text() );
+	}
+	createWidgets();
+}
 
-	public:
-		Doc( QWidget * parent );
+void
+DialogDoc::createWidgets()
+{
+	m_editMonth = new EditMonth( this );
 
-		void setHtml( const QString & html );
-};
+	m_spinThresh = new SpinLimit( this );
+	m_spinThresh->setValue( 100. );
 
-#endif
+	QLabel * labelMonth = new QLabel("&Месяц", this ),
+		   * labelThresh = new QLabel("&Более", this );
+
+	labelMonth->setBuddy( m_editMonth );
+	labelThresh->setBuddy( m_spinThresh );
+
+	QGridLayout * layout = new QGridLayout( this );
+
+	QDialogButtonBox * buttonBox = new QDialogButtonBox( QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+			Qt::Horizontal, this );
+
+	connect( buttonBox, SIGNAL( accepted() ), SLOT( accept() ) );
+	connect( buttonBox, SIGNAL( rejected() ), SLOT( reject() ) );
+
+	layout->addWidget( labelMonth, 0, 0, Qt::AlignRight );
+	layout->addWidget( m_editMonth, 0, 1 );
+	layout->addWidget( labelThresh, 1, 0, Qt::AlignRight );
+	layout->addWidget( m_spinThresh, 1, 1 );
+	layout->addWidget( new Frame( QFrame::HLine ), 2, 0, 1, 2 );
+	layout->addWidget( buttonBox, 3, 0, 1, 2 );
+}
+
+void
+DialogDoc::setMonth( const Month & month )
+{
+	m_editMonth->setMonth( month );
+}
+
+Month
+DialogDoc::month() const
+{
+	return m_editMonth->month();
+}
+
+qreal
+DialogDoc::threshold() const
+{
+	return m_spinThresh->value();
+}
 

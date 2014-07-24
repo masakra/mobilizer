@@ -95,11 +95,8 @@ GridNumber::refresh( const QVariant & key )
 				"bill AS bill "
 			"FROM "
 				"\"mobi\".\"montly\" "
-			"WHERE month = %2 AND year = %3 ) m ON n.number = m.number "
-		//"WHERE "
-			//"n.people_id IS NOT NULL "
-		//"OR  n.pseudo IS NOT NULL "
-		//"OR ( m.month = %2 AND m.year = %3 ) "
+			"WHERE "
+				"month = %2 AND year = %3 ) m ON n.number = m.number "
 		"ORDER BY "
 			"%4 %5 ")
 			.arg( "'FM9999999999999990D00L'" )

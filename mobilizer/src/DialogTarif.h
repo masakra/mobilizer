@@ -32,13 +32,10 @@
 #ifndef DIALOGTARIF_H
 #define DIALOGTARIF_H
 
-#define MAX_LIMIT 10000
-#define STEP_LIMIT 100
-
 #include "Dialog.h"
 
 class QLineEdit;
-class QSpinBox;
+class SpinLimit;
 
 class DialogTarif : public Dialog
 {
@@ -49,7 +46,7 @@ class DialogTarif : public Dialog
 
 		QLineEdit * m_editCaption;
 
-		QSpinBox * m_spinLimit;
+		SpinLimit * m_spinLimit;
 
 	private Q_SLOTS:
 		void save();

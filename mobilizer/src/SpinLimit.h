@@ -24,34 +24,25 @@
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
 
-/*! \class DialogMonth
+/*! \class SpinLimit
  *
  * \brief 
  */
 
-#ifndef DIALOGMONTH_H
-#define DIALOGMONTH_H
+#ifndef SPINLIMIT_H
+#define SPINLIMIT_H
 
-#include <QDialog>
+#define LIMIT_MAX 10000.0
+#define LIMIT_STEP 100.0
 
-class EditMonth;
-class Month;
+#include <QDoubleSpinBox>
 
-class DialogMonth : public QDialog
+class SpinLimit : public QDoubleSpinBox
 {
 	Q_OBJECT
 
-	private:
-		void createWidgets();
-
-		EditMonth * m_editMonth;
-
 	public:
-		DialogMonth( QWidget * parent, const QAction * action = 0 );
-
-		void setMonth( const Month & month );
-
-		Month month() const;
+		SpinLimit( QWidget * parent );
 };
 
 #endif

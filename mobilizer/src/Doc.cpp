@@ -63,7 +63,7 @@ Doc::setHtml( const QString & html )
 }
 
 QString
-Doc::detailTable( const Month & month ) const
+Doc::detailTable( const Month & month, qreal thresh ) const
 {
 	QString html = QString(
 	"<table width=100% bgcolor=gray cellspacing=1 cellpadding=5>"
@@ -90,9 +90,10 @@ Doc::detailTable( const Month & month ) const
 		"WHERE "
 			"m.month = :month "
 		"AND m.year = :year "
-		"AND m.bill - t.\"limit\" > 0 ");
+		"AND m.bill - t.\"limit\" > :thresh ");
 	q.bindValue(":month", month.month() );
 	q.bindValue(":year", month.year() );
+	q.bindValue(":thresh", thresh );
 
 	if ( ! q.exec() )
 		return QString();

@@ -40,8 +40,8 @@ class QGroupBox;
 class QLineEdit;
 class QListWidget;
 class QRadioButton;
-class QSpinBox;
 class ComboBox;
+class SpinLimit;
 
 class DialogNumber : public Dialog
 {
@@ -78,7 +78,7 @@ class DialogNumber : public Dialog
 
 		void fillComboCity();
 
-		QSpinBox * m_spinLimit;
+		SpinLimit * m_spinLimit;
 
 		QDialogButtonBox * m_buttonBox;
 

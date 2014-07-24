@@ -29,7 +29,7 @@
 #include <QtGui>
 #include <NaraGui>
 #include "DialogLoadXmlToDb.h"
-#include "DialogMonth.h"
+#include "DialogDoc.h"
 #include "DialogNumber.h"
 #include "DocNote.h"
 #include "DocOrder.h"
@@ -187,28 +187,30 @@ FormMain::loadXmlToDb()
 void
 FormMain::docOrder()
 {
-	DialogMonth d( this, m_actionDocOrder );
+	DialogDoc d( this, m_actionDocOrder );
 
 	d.setMonth( m_widgetNumber->month() );
 
 	if ( d.exec() ) {
 		const QString docOrderCaption("&Приказ за " + d.month().toString() );
 		if ( ! m_tabWidget->haveLabel( docOrderCaption ) )
-			m_tabWidget->addTab( new DocOrder( m_tabWidget, d.month() ), docOrderCaption, m_actionDocOrder->icon() );
+			m_tabWidget->addTab( new DocOrder( m_tabWidget, d.month(), d.threshold() ),
+					docOrderCaption, m_actionDocOrder->icon() );
 	}
 }
 
 void
 FormMain::docNote()
 {
-	DialogMonth d( this, m_actionDocNote );
+	DialogDoc d( this, m_actionDocNote );
 
 	d.setMonth( m_widgetNumber->month() );
 
 	if ( d.exec() ) {
 		const QString docNoteCaption("&Служебная записка за " + d.month().toString() );
 		if ( ! m_tabWidget->haveLabel( docNoteCaption ) )
-			m_tabWidget->addTab( new DocNote( m_tabWidget, d.month() ), docNoteCaption, m_actionDocNote->icon() );
+			m_tabWidget->addTab( new DocNote( m_tabWidget, d.month(), d.threshold() ),
+					docNoteCaption, m_actionDocNote->icon() );
 	}
 }
 

@@ -28,14 +28,14 @@
 
 #include "Month.h"
 
-DocNote::DocNote( QWidget * parent, const Month & month )
+DocNote::DocNote( QWidget * parent, const Month & month, qreal thresh )
 	: Doc( parent )
 {
-	build( month );
+	build( month, thresh );
 }
 
 void
-DocNote::build( const Month & month )
+DocNote::build( const Month & month, qreal thresh )
 {
 	setHtml( QString(
 	"<hr>"
@@ -61,7 +61,7 @@ DocNote::build( const Month & month )
 	"<tr><td align=center><font size=1>(подпись)</font></td><td align=center><font size=1>(инициалы и фамилия)</font></td></tr>"
 	"</table>")
 			.arg( month.toString() )
-			.arg( detailTable( month ) )
+			.arg( detailTable( month, thresh ) )
 	);
 }
 

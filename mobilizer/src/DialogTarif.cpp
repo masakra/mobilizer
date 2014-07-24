@@ -29,6 +29,7 @@
 #include <QtGui>
 #include <NaraGui>
 #include <NaraPg>
+#include "SpinLimit.h"
 
 DialogTarif::DialogTarif( QWidget * parent )
 	: Dialog( parent )
@@ -42,9 +43,7 @@ DialogTarif::createWidgets()
 {
 	m_editCaption = new QLineEdit( this );
 
-	m_spinLimit = new QSpinBox( this );
-	m_spinLimit->setRange( 0, MAX_LIMIT );
-	m_spinLimit->setSingleStep( STEP_LIMIT );
+	m_spinLimit = new SpinLimit( this );
 
 	QLabel * labelCaption = new QLabel("&Название", this ),
 		   * labelLimit = new QLabel("&Лимит", this );

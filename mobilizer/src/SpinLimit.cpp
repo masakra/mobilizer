@@ -24,55 +24,15 @@
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
 
-#include "DialogMonth.h"
+#include "SpinLimit.h"
 
-#include "EditMonth.h"
-
-#include <QtGui>
-#include <NaraGui>
-
-DialogMonth::DialogMonth( QWidget * parent, const QAction * action )
-	: QDialog( parent )
+SpinLimit::SpinLimit( QWidget * parent )
+	: QDoubleSpinBox( parent )
 {
-	if ( action ) {
-		setWindowIcon( action->icon() );
-		setWindowTitle( action->text() );
-	}
-	createWidgets();
-}
+	setRange( 0, LIMIT_MAX );
+	setSingleStep( LIMIT_STEP );
 
-void
-DialogMonth::createWidgets()
-{
-	m_editMonth = new EditMonth( this );
-
-	QLabel * labelMonth = new QLabel("&Месяц", this );
-
-	labelMonth->setBuddy( m_editMonth );
-
-	QGridLayout * layout = new QGridLayout( this );
-
-	QDialogButtonBox * buttonBox = new QDialogButtonBox( QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-			Qt::Horizontal, this );
-
-	connect( buttonBox, SIGNAL( accepted() ), SLOT( accept() ) );
-	connect( buttonBox, SIGNAL( rejected() ), SLOT( reject() ) );
-
-	layout->addWidget( labelMonth, 0, 0, Qt::AlignRight );
-	layout->addWidget( m_editMonth, 0, 1 );
-	layout->addWidget( new Frame( QFrame::HLine ), 1, 0, 1, 2 );
-	layout->addWidget( buttonBox, 2, 0, 1, 2 );
-}
-
-void
-DialogMonth::setMonth( const Month & month )
-{
-	m_editMonth->setMonth( month );
-}
-
-Month
-DialogMonth::month() const
-{
-	return m_editMonth->month();
+	setDecimals( 2 );
+	setSuffix(" руб.");
 }
 

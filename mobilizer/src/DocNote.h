@@ -39,10 +39,10 @@ class Month;
 class DocNote : public Doc
 {
 	private:
-		void build( const Month & month );
+		void build( const Month & month, qreal thresh );
 
 	public:
-		DocNote( QWidget * parent, const Month & month );
+		DocNote( QWidget * parent, const Month & month, qreal thresh );
 };
 
 #endif

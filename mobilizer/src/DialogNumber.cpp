@@ -30,6 +30,7 @@
 #include <NaraGui>
 #include <NaraPg>
 #include "ComboBox.h"
+#include "SpinLimit.h"
 
 DialogNumber::DialogNumber( QWidget * parent )
 	: Dialog( parent )
@@ -102,9 +103,7 @@ DialogNumber::createWidgets()
 	m_comboTarif = new ComboBox( this );
 	connect( m_comboTarif, SIGNAL( currentIndexChanged( int ) ), SLOT( tarifChanged( int ) ) );
 
-	m_spinLimit = new QSpinBox( this );
-	m_spinLimit->setRange( 0, 10000 );	// TODO MAX_LIMIT	from DialogTarif
-	m_spinLimit->setSingleStep( 100 );	// TODO STEP_LIMIT	from DialogTarif
+	m_spinLimit = new SpinLimit( this );
 
 	m_comboCity = new ComboBox( this );
 

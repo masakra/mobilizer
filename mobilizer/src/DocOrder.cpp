@@ -28,14 +28,14 @@
 
 #include "Month.h"
 
-DocOrder::DocOrder( QWidget * parent, const Month & month )
+DocOrder::DocOrder( QWidget * parent, const Month & month, qreal thresh )
 	: Doc( parent )
 {
-	build( month );
+	build( month, thresh );
 }
 
 void
-DocOrder::build( const Month & month )
+DocOrder::build( const Month & month, qreal thresh )
 {
 	QString html = QString(
 	"<h3 align=center>ПРИКАЗ</h3>"
@@ -85,7 +85,7 @@ DocOrder::build( const Month & month )
 	"</table>"
 	)
 		.arg( month.toString() )	// 1 за месяц
-		.arg( detailTable( month ) )
+		.arg( detailTable( month, thresh ) )
 	;
 
 	setHtml( html );

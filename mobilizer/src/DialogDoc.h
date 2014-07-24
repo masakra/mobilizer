@@ -24,27 +24,39 @@
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
 
-/*! \class Doc
+/*! \class DialogDoc
  *
  * \brief 
  */
 
-#ifndef DOC_H
-#define DOC_H
+#ifndef DIALOGDOC_H
+#define DIALOGDOC_H
 
-#include <NaraGui>
+#include <QDialog>
 
+class EditMonth;
 class Month;
+class SpinLimit;
 
-class Doc : public TextEdit
+class DialogDoc : public QDialog
 {
-	protected:
-		QString detailTable( const Month & month, qreal thresh ) const;
+	Q_OBJECT
+
+	private:
+		void createWidgets();
+
+		EditMonth * m_editMonth;
+
+		SpinLimit * m_spinThresh;
 
 	public:
-		Doc( QWidget * parent );
+		DialogDoc( QWidget * parent, const QAction * action = 0 );
 
-		void setHtml( const QString & html );
+		void setMonth( const Month & month );
+
+		Month month() const;
+
+		qreal threshold() const;
 };
 
 #endif
