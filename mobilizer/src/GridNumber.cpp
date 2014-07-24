@@ -63,7 +63,7 @@ GridNumber::refresh( const QVariant & key )
 {
 	const QVariant prevKey = key.isNull() ? currentKeyValue() : key;
 
-	m_model->setQuery( QString("SELECT "
+	m_model->setQuery( QString("SELECT DISTINCT "
 			"CASE WHEN n.number IS NULL "
 				"THEN m.number "
 				"ELSE n.number "
@@ -92,8 +92,9 @@ GridNumber::refresh( const QVariant & key )
 		"FULL OUTER JOIN "
 			"\"mobi\".\"montly\" m ON n.number = m.number "
 		"WHERE "
-			"m.month = %2 "
-		"AND m.year = %3 "
+			"n.people_id IS NOT NULL "
+		"OR  n.pseudo IS NOT NULL "
+		"OR ( m.month = %2 AND m.year = %3 ) "
 		"ORDER BY "
 			"%4 %5 ")
 			.arg( "'FM9999999999999990D00L'" )

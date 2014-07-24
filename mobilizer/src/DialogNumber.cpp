@@ -35,6 +35,7 @@ DialogNumber::DialogNumber( QWidget * parent )
 	: Dialog( parent )
 {
 	setWindowIcon( QIcon(":/new_number.png") );
+	setWindowTitle("Номер");
 	createWidgets();
 	fillComboOtdel();
 	fillComboTarif();
@@ -193,7 +194,7 @@ DialogNumber::save()
 
 	PgQuery q;
 
-	if ( ! m_key.isNull() && ! numberExists( m_key ) ) {		// it is a new number
+	if ( m_key.isNull() || ! numberExists( m_key ) ) {		// it is a new number
 
 		QStringList fields( QString("number") ),
 					values( "'" + m_editNumber->text() + "'" );
@@ -229,10 +230,10 @@ DialogNumber::save()
 			// IATA код города
 			fields << "city_iata";
 			values << "'" + m_comboCity->currentData().toString() + "'";
-
-			q.prepare("INSERT INTO \"mobi\".\"number\" (" + fields.join(",") +
-					") VALUES (" + values.join(",") + ") RETURNING number");
 		}
+
+		q.prepare("INSERT INTO \"mobi\".\"number\" (" + fields.join(",") +
+				") VALUES (" + values.join(",") + ") RETURNING number");
 
 	} else {				// update number
 		QStringList pairs( QString("number = '%1'").arg( m_editNumber->text() ) );
