@@ -29,7 +29,6 @@
 #include <QtGui>
 #include <NaraGui>
 #include <NaraPg>
-#include "ComboBox.h"
 #include "SpinLimit.h"
 
 DialogNumber::DialogNumber( QWidget * parent )
