@@ -56,7 +56,11 @@ WidgetNumber::createWidgets()
 {
 	m_editMonth = new EditMonth( this );
 
-	m_gridNumber = new GridNumber( this, m_editMonth );
+	m_labelSearch = new QLabel("Поиск: ", this );
+	m_labelSearch->hide();
+	m_labelSearchText = new QLabel( this );
+
+	m_gridNumber = new GridNumber( this, this );
 
 	connect( m_editMonth, SIGNAL( changed( int, int ) ), m_gridNumber, SLOT( refresh() ) );
 
@@ -67,6 +71,9 @@ WidgetNumber::createWidgets()
 	QHBoxLayout * layoutParams = new QHBoxLayout();
 	layoutParams->addWidget( labelMonth );
 	layoutParams->addWidget( m_editMonth );
+	layoutParams->addWidget( m_labelSearch );
+	layoutParams->addWidget( m_labelSearchText );
+	layoutParams->addStretch();
 
 	QVBoxLayout * layout = new QVBoxLayout( this );
 	layout->addLayout( layoutParams );
@@ -84,5 +91,28 @@ Month
 WidgetNumber::month() const
 {
 	return m_editMonth->month();
+}
+
+QString
+WidgetNumber::search( const QString & text )
+{
+	QString t = m_labelSearchText->text();
+
+	t = text.isEmpty() ? t.remove( -1, 1 ) : t + text;
+
+	m_labelSearchText->setText( t );
+
+	m_labelSearch->show();
+	m_labelSearchText->show();
+
+	return t;
+}
+
+void
+WidgetNumber::searchStop()	// slot
+{
+	m_labelSearch->hide();
+	m_labelSearchText->hide();
+	m_labelSearchText->clear();
 }
 

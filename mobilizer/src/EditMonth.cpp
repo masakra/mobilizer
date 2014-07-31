@@ -50,7 +50,6 @@ EditMonth::createWidgets()
 	layout->setSpacing( 1 );
 	layout->addWidget( m_spinMonth );
 	layout->addWidget( m_spinYear );
-	layout->addStretch();
 }
 
 Month

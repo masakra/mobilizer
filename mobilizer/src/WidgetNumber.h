@@ -35,6 +35,7 @@
 #include <QWidget>
 #include "Month.h"
 
+class QLabel;
 class EditMonth;
 class GridNumber;
 
@@ -49,6 +50,9 @@ class WidgetNumber : public QWidget
 
 		GridNumber * m_gridNumber;
 
+		QLabel * m_labelSearch,
+			   * m_labelSearchText;
+
 	public:
 		WidgetNumber( QWidget * parent );
 		~WidgetNumber();
@@ -60,6 +64,11 @@ class WidgetNumber : public QWidget
 		QAction * actionPrint() const;
 
 		QAction * actionSaveToPdf() const;
+
+		QString search( const QString & text = QString() );
+
+	public Q_SLOTS:
+		void searchStop();
 };
 
 #endif

@@ -18,6 +18,8 @@ CREATE TABLE "mobi"."number" (
 	tarif_id	int REFERENCES "mobi"."tarif" ( id ),
 	"limit"		numeric( 12, 4 ) NOT NULL DEFAULT 0 CHECK ( "limit" >= 0 ),
 	city_iata	char( 3 ) REFERENCES "common"."city" ( iata ) ON UPDATE CASCADE,
+	device		bool NOT NULL DEFAULT false,
+	comm		varchar
 	UNIQUE( number, start )
 );
 

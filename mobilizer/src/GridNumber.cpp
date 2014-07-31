@@ -31,14 +31,18 @@
 #include <NaraPg>
 #include "DialogNumber.h"
 #include "EditMonth.h"
+#include "WidgetNumber.h"
 
-GridNumber::GridNumber( QWidget * parent, EditMonth * editMonth )
-	: GridWidget( parent ), m_editMonth( editMonth ), m_orderBy( 1 )
+GridNumber::GridNumber( QWidget * parent, WidgetNumber * widgetNumber )
+	: GridWidget( parent ), m_widgetNumber( widgetNumber ), m_orderBy( 1 )
 {
 	horizontalHeader()->setClickable( true );
 	horizontalHeader()->setSortIndicatorShown( true );
 	connect( horizontalHeader(), SIGNAL( sectionClicked( int ) ), SLOT( columnClicked( int ) ) );
 	refresh();
+
+	m_timerSearch.setInterval( 3000 ); // 3 seconds
+	connect( &m_timerSearch, SIGNAL( timeout() ), widgetNumber, SLOT( searchStop() ) );
 }
 
 QMenu *
@@ -104,8 +108,8 @@ GridNumber::refresh( const QVariant & key )
 		"ORDER BY "
 			"%4 %5 ")
 			.arg( "'FM9999999999999990D00L'" )
-			.arg( m_editMonth->month().month() )
-			.arg( m_editMonth->month().year() )
+			.arg( m_widgetNumber->month().month() )
+			.arg( m_widgetNumber->month().year() )
 			.arg( qAbs( m_orderBy ) )
 			.arg( m_orderBy < 0 ? "DESC" : "ASC" ) );
 
@@ -115,7 +119,7 @@ GridNumber::refresh( const QVariant & key )
 	setColumnCaption( 3, "Отдел");
 	setColumnCaption( 4, "Тарифный план");
 	setColumnCaption( 5, "Лимит");
-	setColumnCaption( 6, m_editMonth->month().toString() );
+	setColumnCaption( 6, m_widgetNumber->month().toString() );
 	setColumnCaption( 7, "Перерасход");
 	setColumnCaption( 8, "Город");
 
@@ -163,4 +167,28 @@ GridNumber::columnClicked( int logicalIndex )
 
 	refresh();
 }
+
+void
+GridNumber::keyPressEvent( QKeyEvent * event )
+{
+	const QString text = event->text();
+
+	if ( event->key() == Qt::Key_Backspace ) {
+		keyboardSearch( m_widgetNumber->search() );
+		m_timerSearch.start();
+
+	} else if ( ! text.isEmpty() ) {
+		keyboardSearch( m_widgetNumber->search( text ) );
+		m_timerSearch.start();
+	}
+
+	if ( event->key() == Qt::Key_Escape ) {
+		m_timerSearch.stop();
+		m_widgetNumber->searchStop();
+		keyboardSearch("");
+	}
+
+	GridWidget::keyPressEvent( event );
+}
+
 

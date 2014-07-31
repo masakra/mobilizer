@@ -33,26 +33,33 @@
 #define GRIDNUMBER_H
 
 #include "GridWidget.h"
+#include <QTimer>
 
-class EditMonth;
+class WidgetNumber;
 
 class GridNumber : public GridWidget
 {
 	Q_OBJECT
 
 	private:
-		EditMonth * m_editMonth;
+		WidgetNumber * m_widgetNumber;
 
 		int m_orderBy;
+
+		QTimer m_timerSearch;
+		QLabel * m_labelSearch,
+			   * m_labelSearchText;
 
 	private Q_SLOTS:
 		void update();
 		void del();
-
 		void columnClicked( int logicalIndex );
 
+	protected:
+		void keyPressEvent( QKeyEvent * event );
+
 	public:
-		GridNumber( QWidget * parent, EditMonth * editMonth );
+		GridNumber( QWidget * parent, WidgetNumber * editMonth );
 
 		QMenu * menu();	// virtual
 

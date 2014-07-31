@@ -98,13 +98,25 @@ DialogNumber::createWidgets()
 
 	m_comboCity = new ComboBox( this );
 
+	m_editStart = new QDateEdit( this );
+	m_editStart->setDisplayFormat("dd.MM.yyyy");
+	m_editStart->setDate( QDate::currentDate() );
+
+	m_editComm = new TextEdit( this, 2 );
+
 	QLabel * labelTarif = new QLabel("&Тарифный план"),
 		   * labelLimit = new QLabel("&Лимит"),
-		   * labelCity = new QLabel("&Город");
+		   * labelCity = new QLabel("&Город"),
+		   * labelStart = new QLabel("&Дата соглашения"),
+		   * labelComm = new QLabel("&Примечание");
 
 	labelTarif->setBuddy( m_comboTarif );
 	labelLimit->setBuddy( m_spinLimit );
 	labelCity->setBuddy( m_comboCity );
+	labelStart->setBuddy( m_editStart );
+	labelComm->setBuddy( m_editComm );
+
+	m_checkDevice = new QCheckBox("&Выдан телефон", this );
 
 	QGridLayout * layoutMan = new QGridLayout( m_groupMan );
 	layoutMan->addWidget( m_radioManNew, 0, 0, 1, 2 );
@@ -128,6 +140,11 @@ DialogNumber::createWidgets()
 	layoutMan->addWidget( m_spinLimit, 8, 1 );
 	layoutMan->addWidget( labelCity, 9, 0, Qt::AlignRight );
 	layoutMan->addWidget( m_comboCity, 9, 1, 1, 3 );
+	layoutMan->addWidget( labelStart, 10, 0, Qt::AlignRight );
+	layoutMan->addWidget( m_editStart, 10, 1 );
+	layoutMan->addWidget( m_checkDevice, 10, 2 );
+	layoutMan->addWidget( labelComm, 11, 0, Qt::AlignRight | Qt::AlignTop );
+	layoutMan->addWidget( m_editComm, 11, 1, 1, 3 );
 
 	connect( m_radioManNew, SIGNAL( toggled( bool ) ), m_editNam, SLOT( setEnabled( bool ) ) );
 	connect( m_radioManNew, SIGNAL( toggled( bool ) ), labelNam, SLOT( setEnabled( bool ) ) );
@@ -207,6 +224,15 @@ DialogNumber::save()
 			// IATA код города
 			fields << "city_iata";
 			values << "'" + m_comboCity->currentData().toString() + "'";
+			// Дата соглашения
+			fields << "start";
+			values << "'" + m_editStart->date().toString("yyyy-MM-dd") + "'";
+			// Выдан телефон
+			fields << "device";
+			values << ( m_checkDevice->isChecked() ? "true" : "false" );
+			// Комментарий
+			fields << "comm";
+			values << "'" + m_editComm->toPlainText().trimmed().replace("'", "`") + "'";
 		}
 
 		q.prepare("INSERT INTO \"mobi\".\"number\" (" + fields.join(",") +
@@ -237,9 +263,17 @@ DialogNumber::save()
 			pairs << QString("\"limit\" = %1").arg( m_spinLimit->value() );
 			// IATA код города
 			pairs << QString("city_iata = '%1'").arg( m_comboCity->currentData().toString() );
-		} else {
-			pairs << "people_id = NULL, pseudo = NULL, otdel_id = NULL, "
-				"tarif_id = NULL, \"limit\" = 0, city_iata = NULL";
+			// Дата соглашения
+			pairs << QString("start = '%1'").arg( m_editStart->date().toString("yyyy-MM-dd") );
+			// Выдан телефон
+			pairs << QString("device = %1").arg( m_checkDevice->isChecked() ? "true" : "false" );
+			// Комментарий
+			pairs << QString("comm = '%1'").arg( m_editComm->toPlainText().trimmed().replace("'", "`") );
+
+		} else {	// удалить все данные о человеке
+			pairs << " people_id = NULL, pseudo = NULL, "
+				"tarif_id = NULL, \"limit\" = default, city_iata = NULL, "
+				"start = default, device = default, comm = NULL";
 		}
 
 		q.prepare("UPDATE \"mobi\".\"number\" SET " + pairs.join(",") + " WHERE number = :number");
@@ -333,7 +367,10 @@ DialogNumber::fetchData()		// virtual
 			"n.start, "		// 8 don`t used
 			"n.tarif_id, "					// 9 tarif ID
 			"n.\"limit\", "					// 10 limit
-			"n.city_iata "					// 11 city IATA code
+			"n.city_iata, "					// 11 city IATA code
+			"n.start, "						// 12 дата соглашения
+			"n.device, "					// 13 выдан телефон
+			"n.comm "						// 14 Комментарий
 		"FROM "
 			"\"mobi\".\"number\" n "
 		"LEFT OUTER JOIN "
@@ -376,9 +413,18 @@ DialogNumber::fetchData()		// virtual
 		m_radioManPseudo->setChecked( true );
 	}
 
-	m_comboTarif->setCurrentData( q.value( 9 ) );
+
+	//m_comboTarif->setCurrentData( q.value( 9 ) );
+	for ( int i = 0; i < m_comboTarif->count(); ++i )
+		if ( m_comboTarif->itemData( i ).toList()[ 0 ] == q.value( 9 ) )	// toList()[ 0 ] is ID
+			m_comboTarif->setCurrentIndex( i );
+
+
 	m_spinLimit->setValue( q.value( 10 ).toDouble() );
 	m_comboCity->setCurrentData( q.value( 11 ) );
+	m_editStart->setDate( q.value( 12 ).toDate() );
+	m_checkDevice->setChecked( q.value( 13 ).toBool() );
+	m_editComm->setText( q.value( 14 ).toString() );
 }
 
 void

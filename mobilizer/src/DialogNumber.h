@@ -34,6 +34,7 @@
 
 #include "Dialog.h"
 
+class QCheckBox;
 class QDateEdit;
 class QDialogButtonBox;
 class QGroupBox;
@@ -42,6 +43,7 @@ class QListWidget;
 class QRadioButton;
 class ComboBox;
 class SpinLimit;
+class TextEdit;
 
 class DialogNumber : public Dialog
 {
@@ -77,6 +79,12 @@ class DialogNumber : public Dialog
 		void fillComboCity();
 
 		SpinLimit * m_spinLimit;
+
+		QDateEdit * m_editStart;
+
+		QCheckBox * m_checkDevice;
+
+		TextEdit * m_editComm;
 
 		QDialogButtonBox * m_buttonBox;
 
