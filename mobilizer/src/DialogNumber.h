@@ -54,7 +54,6 @@ class DialogNumber : public Dialog
 				  * m_editFam,
 				  * m_editNam,
 				  * m_editPat,
-				  * m_editPost,
 				  * m_editPseudo;
 
 		QGroupBox * m_groupMan;
@@ -63,8 +62,7 @@ class DialogNumber : public Dialog
 					 * m_radioManExists,
 					 * m_radioManPseudo;
 
-		ComboBox * m_comboOtdel,
-				 * m_comboTarif,
+		ComboBox * m_comboTarif,
 				 * m_comboCity,
 				 * m_comboSex;
 

@@ -76,13 +76,18 @@ Doc::detailTable( const Month & month, qreal thresh ) const
 	PgQuery q;
 
 	q.prepare("SELECT "
-			"n.post, "
+			"d.caption, "
 			"common.fio( cp.fam, cp.nam, cp.pat ), "
 			"m.bill - t.\"limit\" "
 		"FROM "
 			"\"mobi\".\"number\" n "
 		"LEFT OUTER JOIN "
 			"\"common\".\"people\" cp ON n.people_id = cp.id "
+		"LEFT OUTER JOIN "
+			"\"erp\".\"employee\" e ON n.people_id = e.people_id "
+		"LEFT OUTER JOIN "
+			"\"erp\".\"division\" d ON e.division_abbr = d.abbr "
+
 		"LEFT OUTER JOIN "
 			"\"mobi\".\"tarif\" t ON n.tarif_id = t.id "
 		"LEFT OUTER JOIN "

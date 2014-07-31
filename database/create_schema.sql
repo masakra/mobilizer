@@ -11,10 +11,10 @@ CREATE TABLE "mobi"."tarif" (
 CREATE TABLE "mobi"."number" (
 	number		char( 11 ) NOT NULL,
 	people_id	int REFERENCES "common"."people" ( id ),
-	post		varchar( 255 ),
+	---post		varchar( 255 ),			--- moved out to erp.post, people_id -> erp.employe -> erp.post
 	pseudo		varchar( 64 ),
 	start		timestamp without time zone NOT NULL DEFAULT '1970-01-01 00:00:00',
-	otdel_id	int REFERENCES "erp"."otdel" ( id ),
+	---otdel_id	int REFERENCES "erp"."otdel" ( id ),	--- moved out to erp.division people_id -> erp.employee -> erp.division
 	tarif_id	int REFERENCES "mobi"."tarif" ( id ),
 	"limit"		numeric( 12, 4 ) NOT NULL DEFAULT 0 CHECK ( "limit" >= 0 ),
 	city_iata	char( 3 ) REFERENCES "common"."city" ( iata ) ON UPDATE CASCADE,

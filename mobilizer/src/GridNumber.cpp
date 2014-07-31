@@ -64,27 +64,31 @@ GridNumber::refresh( const QVariant & key )
 	const QVariant prevKey = key.isNull() ? currentKeyValue() : key;
 
 	m_model->setQuery( QString("SELECT DISTINCT "
-			"CASE WHEN n.number IS NULL "
+			"CASE WHEN n.number IS NULL "		// 0
 				"THEN m.number "
 				"ELSE n.number "
 			"END, "
-			"CASE WHEN n.people_id IS NULL "
+			"CASE WHEN n.people_id IS NULL "	// 1
 				"THEN n.pseudo "
 				"ELSE common.fio( cp.fam, cp.nam, cp.pat ) "
 			"END, "
-			"n.post, "
-			"eo.caption, "
-			"t.caption, "
-			"to_char( t.\"limit\", %1), "
-			"to_char( m.bill, %1), "
-			"to_char( m.bill - t.\"limit\", %1), "
-			"c.rcap "
+			"p.caption, "						// 2 erp.post.caption - должность
+			"d.caption, "						// 3 erp.division.caption - отдел
+			"t.caption, "						// 4 mobi.tarif.caption - тариф
+			"to_char( t.\"limit\", %1), "		// 5
+			"to_char( m.bill, %1), "			// 6
+			"to_char( m.bill - t.\"limit\", %1), "		// 7
+			"c.rcap "							// 8
 		"FROM "
 			"\"mobi\".\"number\" n "
 		"LEFT OUTER JOIN "
 			"\"common\".\"people\" cp ON n.people_id = cp.id "
 		"LEFT OUTER JOIN "
-			"\"erp\".\"otdel\" eo ON n.otdel_id = eo.id "
+			"\"erp\".\"employee\" e ON n.people_id = e.people_id "
+		"LEFT OUTER JOIN "
+			"\"erp\".\"division\" d ON e.division_abbr = d.abbr "
+		"LEFT OUTER JOIN "
+			"\"erp\".\"post\" p ON e.post_id = p.id "
 		"LEFT OUTER JOIN "
 			"\"mobi\".\"tarif\" t ON n.tarif_id = t.id "
 		"LEFT OUTER JOIN "
