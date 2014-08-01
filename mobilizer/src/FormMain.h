@@ -34,7 +34,6 @@
 
 #include <QMainWindow>
 
-class TabWidget;
 class WidgetNumber;
 
 class FormMain : public QMainWindow
@@ -42,8 +41,6 @@ class FormMain : public QMainWindow
 	Q_OBJECT
 
 	private:
-		TabWidget * m_tabWidget;
-
 		WidgetNumber * m_widgetNumber;
 
 		void createWidgets();

@@ -28,6 +28,7 @@
 
 #include <QtGui>
 #include <NaraGui>
+#include "_.h"
 #include "DialogLoadXmlToDb.h"
 #include "DialogDoc.h"
 #include "DialogNumber.h"
@@ -67,12 +68,12 @@ FormMain::~FormMain()
 void
 FormMain::createWidgets()
 {
-	m_tabWidget = new TabWidget( this );
+	_tab = new TabWidget( this );
 
 	m_widgetNumber = new WidgetNumber( this );
-	m_tabWidget->addTab( m_widgetNumber, "&Номера", QIcon(), false );
+	_tab->addTab( m_widgetNumber, "&Номера", QIcon(), false );
 
-	setCentralWidget( m_tabWidget );
+	setCentralWidget( _tab );
 }
 
 void
@@ -153,14 +154,14 @@ FormMain::gridTarif()
 {
 	static const QString gridTarifCaption("&Тарифные планы");
 
-	if ( ! m_tabWidget->haveLabel( gridTarifCaption ) )
-		m_tabWidget->addTab( new GridTarif( m_tabWidget ), gridTarifCaption );
+	if ( ! _tab->haveLabel( gridTarifCaption ) )
+		_tab->addTab( new GridTarif( _tab ), gridTarifCaption );
 }
 
 void
 FormMain::aboutToShowMenuActions()
 {
-	GridWidget * gridWidget = qobject_cast< GridWidget * >( m_tabWidget->currentWidget() );
+	GridWidget * gridWidget = qobject_cast< GridWidget * >( _tab->currentWidget() );
 
 	if ( gridWidget )
 		m_gridWidgetMenuAction = m_menuActions->addMenu( gridWidget->menu() );
@@ -193,8 +194,8 @@ FormMain::docOrder()
 
 	if ( d.exec() ) {
 		const QString docOrderCaption("&Приказ за " + d.month().toString() );
-		if ( ! m_tabWidget->haveLabel( docOrderCaption ) )
-			m_tabWidget->addTab( new DocOrder( m_tabWidget, d.month(), d.threshold() ),
+		if ( ! _tab->haveLabel( docOrderCaption ) )
+			_tab->addTab( new DocOrder( _tab, d.month(), d.threshold() ),
 					docOrderCaption, m_actionDocOrder->icon() );
 	}
 }
@@ -208,8 +209,8 @@ FormMain::docNote()
 
 	if ( d.exec() ) {
 		const QString docNoteCaption("&Служебная записка за " + d.month().toString() );
-		if ( ! m_tabWidget->haveLabel( docNoteCaption ) )
-			m_tabWidget->addTab( new DocNote( m_tabWidget, d.month(), d.threshold() ),
+		if ( ! _tab->haveLabel( docNoteCaption ) )
+			_tab->addTab( new DocNote( _tab, d.month(), d.threshold() ),
 					docNoteCaption, m_actionDocNote->icon() );
 	}
 }
@@ -234,7 +235,7 @@ FormMain::about()
 void
 FormMain::aboutToShowMenuFile()
 {
-	TextEdit * textEdit = qobject_cast< TextEdit * >( m_tabWidget->currentWidget() );
+	TextEdit * textEdit = qobject_cast< TextEdit * >( _tab->currentWidget() );
 
 	if ( textEdit ) {
 		QAction * firstAction = m_menuFile->actions().at( 0 );

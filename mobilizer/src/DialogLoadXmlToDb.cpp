@@ -52,6 +52,10 @@ DialogLoadXmlToDb::createWidgets()
 
 	m_editMonth = new EditMonth( this );
 
+	QHBoxLayout * layoutMonth = new QHBoxLayout();
+	layoutMonth->addWidget( m_editMonth );
+	layoutMonth->addStretch();
+
 	QLabel * labelPath = new QLabel("&XML файл", this ),
 		   * labelMonth = new QLabel("&Месяц", this );
 
@@ -67,7 +71,7 @@ DialogLoadXmlToDb::createWidgets()
 	layout->addWidget( labelPath, 0, 0, Qt::AlignRight );
 	layout->addLayout( layoutPath, 0, 1 );
 	layout->addWidget( labelMonth, 1, 0, Qt::AlignRight );
-	layout->addWidget( m_editMonth, 1, 1 );
+	layout->addLayout( layoutMonth, 1, 1 );
 	layout->addWidget( buttonBox, 2, 0, 1, 2 );
 
 }
@@ -120,25 +124,60 @@ DialogLoadXmlToDb::save()
 
 	QXmlStreamReader xml( &xmlFile );
 
-	QStringList list;
+	QStringList montly,
+				detail;
+
+	QString ds_number;
+
+	//int count = 0;
 
 	while ( ! xml.atEnd() ) {
-		if ( xml.readNextStartElement() )
+		if ( xml.readNextStartElement() ) {
 			if ( xml.name() == "tp" ) {
-				const QString n = xml.attributes().value("n").toString(),
-							  a = xml.attributes().value("a").toString().replace(",", ".");
-				list << QString("(%1,%2,'%3',%4)")
+				const QString number = xml.attributes().value("n").toString(),
+							  bill = xml.attributes().value("a").toString().replace(",", ".");
+				montly << QString("(%1,%2,'%3',%4)")
 					.arg( m_editMonth->month().year() )
 					.arg( m_editMonth->month().month() )
-					.arg( n, a );
+					.arg( number, bill );
+				continue;
 			}
+
+			if ( xml.name() == "ds" ) {
+				ds_number = xml.attributes().value("sim").isEmpty() ? "" : xml.attributes().value("n").toString();
+				continue;
+			}
+
+			if ( xml.name() == "i" ) {
+				const QDateTime start = QDateTime::fromString( xml.attributes().value("d").toString(),
+						"dd.MM.yyyy H:mm:ss");
+				//qDebug() << ds_number << xml.attributes().value("n").toString() << start.toString();
+				const QString pair = xml.attributes().value("n").toString(),
+							  type = xml.attributes().value("s").toString(),
+							  tz = xml.attributes().value("gmt").toString(),
+							  durfact = xml.attributes().value("du").toString().replace(",", "."),
+							  duration = xml.attributes().value("dup").toString().replace(",", "."),
+							  bill = xml.attributes().value("c").toString().replace(",", ".");
+				if ( ! ds_number.isEmpty() && ! bill.isEmpty()/* && ++count > 125 and count <= 150 */)
+					detail << QString("('%1','%2','%3','%4','%5','%6',%7)")
+						.arg( ds_number )
+						.arg( start.toString("yyyy-MM-dd hh:mm:ss ") + tz )
+						.arg( pair )
+						.arg( type )
+						.arg( durfact )
+						.arg( duration )
+						.arg( bill );
+
+				continue;
+			}
+		}
 	}
 
 	QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
 	QSqlDatabase db = QSqlDatabase::database();
 	db.transaction();
 
-	if ( saveToDb( list ) ) {
+	if ( saveMontlyToDb( montly ) && saveDetailToDb( detail ) ) {
 		db.commit();
 		accept();
 	} else
@@ -148,9 +187,9 @@ DialogLoadXmlToDb::save()
 }
 
 bool
-DialogLoadXmlToDb::saveToDb( const QStringList & list ) const
+DialogLoadXmlToDb::saveMontlyToDb( const QStringList & montly ) const
 {
-	if ( list.isEmpty() )
+	if ( montly.isEmpty() )
 		return false;
 
 	PgQuery q;
@@ -170,7 +209,35 @@ DialogLoadXmlToDb::saveToDb( const QStringList & list ) const
 	// добавить новый записи за месяц
 	q.prepare("INSERT INTO "
 			"\"mobi\".\"montly\" (year,month,number,bill) "
-			"VALUES " + list.join(",") );
+			"VALUES " + montly.join(",") );
+
+	return q.exec();
+}
+
+bool
+DialogLoadXmlToDb::saveDetailToDb( const QStringList & detail ) const
+{
+	if ( detail.isEmpty() )
+		return false;
+
+	PgQuery q;
+
+	// удалить все записи за период
+	q.prepare("DELETE FROM "
+				"\"mobi\".\"detail\" "
+			"WHERE "
+				"EXTRACT( year FROM start ) = :year "
+			"AND EXTRACT( month FROM start ) = :month ");
+	q.bindValue(":year", m_editMonth->month().year() );
+	q.bindValue(":month", m_editMonth->month().month() );
+
+	if ( ! q.exec() )
+		return false;
+
+	// добавить записи
+	q.prepare("INSERT INTO "
+			"\"mobi\".\"detail\" (number,start,pair,type,durfact,duration,bill) "
+			"VALUES " + detail.join(",") );
 
 	return q.exec();
 }

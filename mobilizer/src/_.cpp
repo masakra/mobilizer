@@ -24,49 +24,7 @@
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
 
-/*! \class GridNumber
- *
- * \brief 
- */
+#include "_.h"
 
-#ifndef GRIDNUMBER_H
-#define GRIDNUMBER_H
-
-#include "GridWidget.h"
-#include <QTimer>
-
-class WidgetNumber;
-
-class GridNumber : public GridWidget
-{
-	Q_OBJECT
-
-	private:
-		WidgetNumber * m_widgetNumber;
-
-		int m_orderBy;
-
-		QTimer m_timerSearch;
-		QLabel * m_labelSearch,
-			   * m_labelSearchText;
-
-	private Q_SLOTS:
-		void update();
-		void del();
-		void columnClicked( int logicalIndex );
-		void detail();
-
-	protected:
-		void keyPressEvent( QKeyEvent * event );
-
-	public:
-		GridNumber( QWidget * parent, WidgetNumber * widgetNumber );
-
-		QMenu * menu();	// virtual
-
-	public Q_SLOTS:
-		void refresh( const QVariant & key = QVariant() );
-};
-
-#endif
+TabWidget * _tab;
 

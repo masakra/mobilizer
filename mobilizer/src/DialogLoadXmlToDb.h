@@ -49,7 +49,9 @@ class DialogLoadXmlToDb : public QDialog
 
 		EditMonth * m_editMonth;
 
-		bool saveToDb( const QStringList & list ) const;
+		bool saveMontlyToDb( const QStringList & list ) const;
+
+		bool saveDetailToDb( const QStringList & detail ) const;
 
 	private Q_SLOTS:
 		void openXmlFile();

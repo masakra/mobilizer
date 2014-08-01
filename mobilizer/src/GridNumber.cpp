@@ -29,7 +29,9 @@
 #include <QtGui>
 #include <QtSql>
 #include <NaraPg>
+#include "_.h"
 #include "DialogNumber.h"
+#include "DocDetail.h"
 #include "EditMonth.h"
 #include "WidgetNumber.h"
 
@@ -56,8 +58,11 @@ GridNumber::menu() // virtual
 
 	m_menu->addAction( QIcon::fromTheme("view-refresh", QIcon() ), "&Обновить", this, SLOT( refresh() ),
 			Qt::CTRL + Qt::Key_R );
+	m_menu->addAction( QIcon(), "Детализация", this, SLOT( detail() ), Qt::CTRL + Qt::Key_D );
 	m_menu->addAction( QIcon(), "Изменить запись", this, SLOT( update() ), Qt::CTRL + Qt::Key_E );
-	//m_menu->addAction( QIcon(), "Удалить номер", this, SLOT( del() ), Qt::Key_Delete );
+	m_menu->addAction( QIcon::fromTheme("edit-delete", QIcon() ), "Удалить запись", this,
+			SLOT( del() ), Qt::Key_Delete );
+
 
 	return m_menu;
 }
@@ -154,7 +159,7 @@ GridNumber::del()
 	q.bindValue(":number", currentKeyValue() );
 
 	if ( q.exec() )
-		refresh( prevKeyValue() );
+		refresh( currentKeyValue() );
 }
 
 void
@@ -171,6 +176,9 @@ GridNumber::columnClicked( int logicalIndex )
 void
 GridNumber::keyPressEvent( QKeyEvent * event )
 {
+	if ( ( ( event->modifiers() & Qt::ControlModifier ) | ( event->modifiers() & Qt::AltModifier ) ) != 0 )
+		return GridWidget::keyPressEvent( event );
+
 	const QString text = event->text();
 
 	if ( event->key() == Qt::Key_Backspace ) {
@@ -191,4 +199,16 @@ GridNumber::keyPressEvent( QKeyEvent * event )
 	GridWidget::keyPressEvent( event );
 }
 
+
+void
+GridNumber::detail()
+{
+	const QString number = currentKeyValue().toString(),
+				  docDetailCaption = QString("&Детализация %1 за %2")
+					  .arg( number )
+					  .arg( m_widgetNumber->month().toString() );
+
+	if ( ! _tab->haveLabel( docDetailCaption ) )
+		_tab->addTab( new DocDetail( _tab, number, m_widgetNumber->month() ), docDetailCaption );
+}
 

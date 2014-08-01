@@ -24,48 +24,29 @@
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
 
-/*! \class GridNumber
+/*! \class DocDetail
  *
  * \brief 
  */
 
-#ifndef GRIDNUMBER_H
-#define GRIDNUMBER_H
+#ifndef DOCDETAIL_H
+#define DOCDETAIL_H
 
-#include "GridWidget.h"
-#include <QTimer>
+#include "Doc.h"
 
-class WidgetNumber;
+class Month;
 
-class GridNumber : public GridWidget
+class DocDetail : public Doc
 {
 	Q_OBJECT
 
 	private:
-		WidgetNumber * m_widgetNumber;
+		void build( const QString & number, const Month & month );
 
-		int m_orderBy;
-
-		QTimer m_timerSearch;
-		QLabel * m_labelSearch,
-			   * m_labelSearchText;
-
-	private Q_SLOTS:
-		void update();
-		void del();
-		void columnClicked( int logicalIndex );
-		void detail();
-
-	protected:
-		void keyPressEvent( QKeyEvent * event );
+		QString table( const QString & number, const Month & month );
 
 	public:
-		GridNumber( QWidget * parent, WidgetNumber * widgetNumber );
-
-		QMenu * menu();	// virtual
-
-	public Q_SLOTS:
-		void refresh( const QVariant & key = QVariant() );
+		DocDetail( QWidget * parent, const QString & number, const Month & month );
 };
 
 #endif
