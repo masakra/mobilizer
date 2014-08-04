@@ -61,7 +61,7 @@ DocDetail::table( const QString & number, const Month & month )
 			"<th bgcolor=gainsboro>Вр.<br>зона</th>"
 			"<th bgcolor=gainsboro>Номер</th>"
 			"<th bgcolor=gainsboro>Услуга</th>"
-			"<th bgcolor=gainsboro>Длительность/<br>Объём</th>"
+			"<th bgcolor=gainsboro>Длительность<br>или объём</th>"
 			"<th bgcolor=gainsboro width=10%>руб.</th>"
 		"</tr>";
 

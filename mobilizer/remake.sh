@@ -13,6 +13,7 @@ then
 		-L../../narapg/release \
 		-lnaragui \
 		-lnarapg"
+	RC="../icons.rc"
 else
 	GMAKE="/usr/local/bin/gmake";
 	QMAKE="/usr/local/bin/qmake-qt4";
@@ -55,7 +56,9 @@ then
 	# LFLAGS
 	echo "QMAKE_LFLAGS= ${LFLAGS}" >> ${TARGET}.pro;
 	echo "QMAKE_LFLAGS= ${LFLAGS}";
-
+	# доп. ресурсы
+	echo "RC_FILE = ${RC}" >> ${TARGET}.pro
+	echo "RC_FILE = ${RC}";
 
 	${QMAKE} ${SPEC}
 else
