@@ -73,6 +73,11 @@ main( int argc, char ** argv )
 		return 1;
 
 	FormMain fm;
+	fm.setWindowTitle( QString("%1 %2@%3:%4")
+			.arg( app.applicationName() )
+			.arg( dc.userName() )
+			.arg( dc.hostName() )
+			.arg( dc.databaseName() ) );
 	fm.show();
 
 	return app.exec();
