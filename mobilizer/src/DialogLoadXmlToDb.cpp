@@ -124,18 +124,19 @@ DialogLoadXmlToDb::save()
 
 	QXmlStreamReader xml( &xmlFile );
 
-	QStringList montly,
+	QStringList numbers,
+				ds_numbers,
+				montly,
 				detail;
 
 	QString ds_number;
-
-	//int count = 0;
 
 	while ( ! xml.atEnd() ) {
 		if ( xml.readNextStartElement() ) {
 			if ( xml.name() == "tp" ) {
 				const QString number = xml.attributes().value("n").toString(),
 							  bill = xml.attributes().value("a").toString().replace(",", ".");
+				numbers << number;
 				montly << QString("(%1,%2,'%3',%4)")
 					.arg( m_editMonth->month().year() )
 					.arg( m_editMonth->month().month() )
@@ -145,20 +146,21 @@ DialogLoadXmlToDb::save()
 
 			if ( xml.name() == "ds" ) {
 				ds_number = xml.attributes().value("sim").isEmpty() ? "" : xml.attributes().value("n").toString();
+				if ( ! ds_number.isEmpty() )
+					ds_numbers << ds_number;
 				continue;
 			}
 
 			if ( xml.name() == "i" ) {
 				const QDateTime start = QDateTime::fromString( xml.attributes().value("d").toString(),
 						"dd.MM.yyyy H:mm:ss");
-				//qDebug() << ds_number << xml.attributes().value("n").toString() << start.toString();
 				const QString pair = xml.attributes().value("n").toString(),
 							  type = xml.attributes().value("s").toString(),
 							  tz = xml.attributes().value("gmt").toString(),
 							  durfact = xml.attributes().value("du").toString().replace(",", "."),
 							  duration = xml.attributes().value("dup").toString().replace(",", "."),
 							  bill = xml.attributes().value("c").toString().replace(",", ".");
-				if ( ! ds_number.isEmpty() && ! bill.isEmpty()/* && ++count > 125 and count <= 150 */)
+				if ( ! ds_number.isEmpty() && ! bill.isEmpty() )
 					detail << QString("('%1','%2','%3','%4','%5','%6',%7)")
 						.arg( ds_number )
 						.arg( start.toString("yyyy-MM-dd hh:mm:ss ") + tz )
@@ -177,7 +179,7 @@ DialogLoadXmlToDb::save()
 	QSqlDatabase db = QSqlDatabase::database();
 	db.transaction();
 
-	if ( saveMontlyToDb( montly ) && saveDetailToDb( detail ) ) {
+	if ( saveMontlyToDb( numbers, montly ) && saveDetailToDb( ds_numbers, detail ) ) {
 		db.commit();
 		accept();
 	} else
@@ -187,7 +189,7 @@ DialogLoadXmlToDb::save()
 }
 
 bool
-DialogLoadXmlToDb::saveMontlyToDb( const QStringList & montly ) const
+DialogLoadXmlToDb::saveMontlyToDb( const QStringList & numbers, const QStringList & montly ) const
 {
 	if ( montly.isEmpty() )
 		return false;
@@ -195,11 +197,13 @@ DialogLoadXmlToDb::saveMontlyToDb( const QStringList & montly ) const
 	PgQuery q;
 
 	// удалить все записи за месяц
-	q.prepare("DELETE FROM "
+	q.prepare( QString("DELETE FROM "
 				"\"mobi\".\"montly\" "
 			"WHERE "
 				"year = :year "
-			"AND month = :month");
+			"AND month = :month "
+			"AND number IN (%1)")
+		.arg( numbers.join("','").append("'").prepend("'") ) );
 	q.bindValue(":year", m_editMonth->month().year() );
 	q.bindValue(":month", m_editMonth->month().month() );
 
@@ -215,19 +219,21 @@ DialogLoadXmlToDb::saveMontlyToDb( const QStringList & montly ) const
 }
 
 bool
-DialogLoadXmlToDb::saveDetailToDb( const QStringList & detail ) const
+DialogLoadXmlToDb::saveDetailToDb( const QStringList & ds_numbers, const QStringList & detail ) const
 {
 	if ( detail.isEmpty() )
 		return false;
 
 	PgQuery q;
 
-	// удалить все записи за период
-	q.prepare("DELETE FROM "
+	// удалить все записи за период в ds_numbers
+	q.prepare( QString("DELETE FROM "
 				"\"mobi\".\"detail\" "
 			"WHERE "
 				"EXTRACT( year FROM start ) = :year "
-			"AND EXTRACT( month FROM start ) = :month ");
+			"AND EXTRACT( month FROM start ) = :month "
+			"AND number IN (%1)")
+		.arg( ds_numbers.join("','").append("'").prepend("'") ) );
 	q.bindValue(":year", m_editMonth->month().year() );
 	q.bindValue(":month", m_editMonth->month().month() );
 
