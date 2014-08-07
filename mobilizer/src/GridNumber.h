@@ -66,6 +66,10 @@ class GridNumber : public GridWidget
 
 	public Q_SLOTS:
 		void refresh( const QVariant & key = QVariant() );
+
+	Q_SIGNALS:
+		void rowCountChanged( int count ) const;
+
 };
 
 #endif

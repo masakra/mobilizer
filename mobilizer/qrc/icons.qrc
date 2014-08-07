@@ -9,6 +9,9 @@
 	<file alias="doc_note.png">icons/doc_note_64x64.png</file>
 	<file alias="exit.png">icons/application-exit_16x16.png</file>
 	<file alias="folder-open.png">icons/folder-open_16x16.png</file>
+	<file alias="unknown.png">icons/unknown_16x16.png</file>
+	<file alias="checked.png">icons/checked_16x16.png</file>
+	<file alias="wrong.png">icons/wrong_16x16.png</file>
  </qresource>
 </RCC>
 

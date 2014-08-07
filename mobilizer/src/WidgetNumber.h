@@ -51,7 +51,11 @@ class WidgetNumber : public QWidget
 		GridNumber * m_gridNumber;
 
 		QLabel * m_labelSearch,
-			   * m_labelSearchText;
+			   * m_labelSearchText,
+			   * m_labelCount;
+
+	private Q_SLOTS:
+		void setRowCount( int count );
 
 	public:
 		WidgetNumber( QWidget * parent );

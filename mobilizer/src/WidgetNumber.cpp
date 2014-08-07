@@ -60,9 +60,12 @@ WidgetNumber::createWidgets()
 	m_labelSearch->hide();
 	m_labelSearchText = new QLabel( this );
 
+	m_labelCount = new QLabel( this );
+
 	m_gridNumber = new GridNumber( this, this );
 
 	connect( m_editMonth, SIGNAL( changed( int, int ) ), m_gridNumber, SLOT( refresh() ) );
+	connect( m_gridNumber, SIGNAL( rowCountChanged( int ) ), SLOT( setRowCount( int ) ) );
 
 	QLabel * labelMonth = new QLabel("&Месяц");
 
@@ -74,6 +77,7 @@ WidgetNumber::createWidgets()
 	layoutParams->addWidget( m_labelSearch );
 	layoutParams->addWidget( m_labelSearchText );
 	layoutParams->addStretch();
+	layoutParams->addWidget( m_labelCount );
 
 	QVBoxLayout * layout = new QVBoxLayout( this );
 	layout->addLayout( layoutParams );
@@ -84,7 +88,7 @@ void
 WidgetNumber::setMonth( const Month & month )
 {
 	m_editMonth->setMonth( month );
-	//m_gridNumber->refresh();
+	m_gridNumber->refresh();
 }
 
 Month
@@ -116,3 +120,8 @@ WidgetNumber::searchStop()	// slot
 	m_labelSearchText->clear();
 }
 
+void
+WidgetNumber::setRowCount( int count )
+{
+	m_labelCount->setText( QString("Строк: %1 ").arg( count ) );
+}

@@ -118,6 +118,8 @@ GridNumber::refresh( const QVariant & key )
 			.arg( qAbs( m_orderBy ) )
 			.arg( m_orderBy < 0 ? "DESC" : "ASC" ) );
 
+	emit rowCountChanged( m_model->rowCount() );
+
 	setColumnCaption( 0, "Номер");
 	setColumnCaption( 1, "Пользователь");
 	setColumnCaption( 2, "Должность");

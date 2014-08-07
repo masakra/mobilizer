@@ -35,7 +35,7 @@
 #include <QDialog>
 #include "Month.h"
 
-class QLineEdit;
+class QListWidget;
 class EditMonth;
 
 class DialogLoadXmlToDb : public QDialog
@@ -45,7 +45,8 @@ class DialogLoadXmlToDb : public QDialog
 	private:
 		void createWidgets();
 
-		QLineEdit * m_editPath;
+		//QLineEdit * m_editPath;
+		QListWidget * m_listPath;
 
 		EditMonth * m_editMonth;
 

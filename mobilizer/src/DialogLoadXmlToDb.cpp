@@ -40,14 +40,14 @@ DialogLoadXmlToDb::DialogLoadXmlToDb( QWidget * parent )
 void
 DialogLoadXmlToDb::createWidgets()
 {
-	m_editPath = new QLineEdit( this );
+	m_listPath = new QListWidget( this );
 
 	QToolButton * buttonPath = new QToolButton( this );
 	buttonPath->setIcon( QIcon::fromTheme("folder-open", QIcon(":/folder-open.png") ) );
 	connect( buttonPath, SIGNAL( clicked() ), SLOT( openXmlFile() ) );
 
 	QHBoxLayout * layoutPath = new QHBoxLayout();
-	layoutPath->addWidget( m_editPath );
+	layoutPath->addWidget( m_listPath );
 	layoutPath->addWidget( buttonPath );
 
 	m_editMonth = new EditMonth( this );
@@ -56,10 +56,10 @@ DialogLoadXmlToDb::createWidgets()
 	layoutMonth->addWidget( m_editMonth );
 	layoutMonth->addStretch();
 
-	QLabel * labelPath = new QLabel("&XML файл", this ),
+	QLabel * labelPath = new QLabel("&XML файлы", this ),
 		   * labelMonth = new QLabel("&Месяц", this );
 
-	labelPath->setBuddy( m_editPath );
+	labelPath->setBuddy( m_listPath );
 	labelMonth->setBuddy( m_editMonth );
 
 	QDialogButtonBox * buttonBox = new QDialogButtonBox( QDialogButtonBox::Save | QDialogButtonBox::Close,
@@ -79,16 +79,26 @@ DialogLoadXmlToDb::createWidgets()
 void
 DialogLoadXmlToDb::openXmlFile()
 {
-	const QString fileName = QFileDialog::getOpenFileName( this, "XML-файл для загрузки в базу данных",
-			QString(), "XML файлы ( *.xml );;Все файлы ( *.* )");
+	QSettings s;
 
-	if ( fileName.isEmpty() )
+	static const QString lastXmlDir = "last_xml_dir";
+
+	const QStringList fileNames = QFileDialog::getOpenFileNames( this, "XML-файлы для загрузки в базу данных",
+			s.value( lastXmlDir, QDir::homePath() ).toString(),
+			"XML файлы ( *.xml );;Все файлы ( *.* )");
+
+	if ( fileNames.isEmpty() )
 		return;
 
-	m_editPath->setText( fileName );
+	foreach ( QString fileName, fileNames ) {
+		QListWidgetItem * item = new QListWidgetItem( QIcon(":/unknown.png"), fileName );
+		m_listPath->addItem( item );
+	}
 
 
-	QFile xmlFile( fileName );
+	QFile xmlFile( fileNames.at( 0 ) );
+	
+	s.setValue( lastXmlDir, QFileInfo( fileNames.at( 0 ) ).absoluteDir().absolutePath() );
 
 	if ( ! xmlFile.open( QIODevice::ReadOnly ) )
 		return;
@@ -117,73 +127,82 @@ DialogLoadXmlToDb::openXmlFile()
 void
 DialogLoadXmlToDb::save()
 {
-	QFile xmlFile( m_editPath->text() );
+	QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
 
-	if ( ! xmlFile.open( QIODevice::ReadOnly ) )
-		return;
+	for ( int i = 0; i < m_listPath->count(); ++i ) {
 
-	QXmlStreamReader xml( &xmlFile );
+		QApplication::processEvents();
 
-	QStringList numbers,
-				ds_numbers,
-				montly,
-				detail;
+		QFile xmlFile( m_listPath->item( i )->text() );
 
-	QString ds_number;
+		if ( ! xmlFile.open( QIODevice::ReadOnly ) )
+			return;
 
-	while ( ! xml.atEnd() ) {
-		if ( xml.readNextStartElement() ) {
-			if ( xml.name() == "tp" ) {
-				const QString number = xml.attributes().value("n").toString(),
-							  bill = xml.attributes().value("a").toString().replace(",", ".");
-				numbers << number;
-				montly << QString("(%1,%2,'%3',%4)")
-					.arg( m_editMonth->month().year() )
-					.arg( m_editMonth->month().month() )
-					.arg( number, bill );
-				continue;
-			}
+		QXmlStreamReader xml( &xmlFile );
 
-			if ( xml.name() == "ds" ) {
-				ds_number = xml.attributes().value("sim").isEmpty() ? "" : xml.attributes().value("n").toString();
-				if ( ! ds_number.isEmpty() )
-					ds_numbers << ds_number;
-				continue;
-			}
+		QStringList numbers,
+					ds_numbers,
+					montly,
+					detail;
 
-			if ( xml.name() == "i" ) {
-				const QDateTime start = QDateTime::fromString( xml.attributes().value("d").toString(),
-						"dd.MM.yyyy H:mm:ss");
-				const QString pair = xml.attributes().value("n").toString(),
-							  type = xml.attributes().value("s").toString(),
-							  tz = xml.attributes().value("gmt").toString(),
-							  durfact = xml.attributes().value("du").toString().replace(",", "."),
-							  duration = xml.attributes().value("dup").toString().replace(",", "."),
-							  bill = xml.attributes().value("c").toString().replace(",", ".");
-				if ( ! ds_number.isEmpty() && ! bill.isEmpty() )
-					detail << QString("('%1','%2','%3','%4','%5','%6',%7)")
-						.arg( ds_number )
-						.arg( start.toString("yyyy-MM-dd hh:mm:ss ") + tz )
-						.arg( pair )
-						.arg( type )
-						.arg( durfact )
-						.arg( duration )
-						.arg( bill );
+		QString ds_number;
+	
+		while ( ! xml.atEnd() ) {
+			if ( xml.readNextStartElement() ) {
+				if ( xml.name() == "tp" ) {
+					const QString number = xml.attributes().value("n").toString(),
+							  	bill = xml.attributes().value("a").toString().replace(",", ".");
+					numbers << number;
+					montly << QString("(%1,%2,'%3',%4)")
+						.arg( m_editMonth->month().year() )
+						.arg( m_editMonth->month().month() )
+						.arg( number, bill );
+					continue;
+				}
 
-				continue;
+				if ( xml.name() == "ds" ) {
+					ds_number = xml.attributes().value("sim").isEmpty() ? "" : xml.attributes().value("n").toString();
+					if ( ! ds_number.isEmpty() )
+						ds_numbers << ds_number;
+						continue;
+					}
+	
+				if ( xml.name() == "i" ) {
+					const QDateTime start = QDateTime::fromString( xml.attributes().value("d").toString(),
+							"dd.MM.yyyy H:mm:ss");
+					const QString pair = xml.attributes().value("n").toString(),
+							  	type = xml.attributes().value("s").toString(),
+							  	tz = xml.attributes().value("gmt").toString(),
+							  	durfact = xml.attributes().value("du").toString().replace(",", "."),
+							  	duration = xml.attributes().value("dup").toString().replace(",", "."),
+							  	bill = xml.attributes().value("c").toString().replace(",", ".");
+					if ( ! ds_number.isEmpty() && ! bill.isEmpty() )
+						detail << QString("('%1','%2','%3','%4','%5','%6',%7)")
+							.arg( ds_number )
+							.arg( start.toString("yyyy-MM-dd hh:mm:ss ") + tz )
+							.arg( pair )
+							.arg( type )
+							.arg( durfact )
+							.arg( duration )
+							.arg( bill );
+
+					continue;
+				}
 			}
 		}
+
+		QSqlDatabase db = QSqlDatabase::database();
+		db.transaction();
+
+		if ( saveMontlyToDb( numbers, montly ) && saveDetailToDb( ds_numbers, detail ) ) {
+			db.commit();
+			m_listPath->item( i )->setIcon( QIcon(":/checked.png") );
+		} else {
+			db.rollback();
+			m_listPath->item( i )->setIcon( QIcon(":/wrong.png") );
+		}
+
 	}
-
-	QApplication::setOverrideCursor( QCursor( Qt::WaitCursor ) );
-	QSqlDatabase db = QSqlDatabase::database();
-	db.transaction();
-
-	if ( saveMontlyToDb( numbers, montly ) && saveDetailToDb( ds_numbers, detail ) ) {
-		db.commit();
-		accept();
-	} else
-		db.rollback();
 
 	QApplication::restoreOverrideCursor();
 }
