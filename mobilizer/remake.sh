@@ -57,7 +57,7 @@ then
 	echo "QMAKE_LFLAGS= ${LFLAGS}" >> ${TARGET}.pro;
 	echo "QMAKE_LFLAGS= ${LFLAGS}";
 	# доп. ресурсы
-	echo "RC_FILE = ${RC}" >> ${TARGET}.pro
+	echo "RC_FILE = ${RC}" >> ${TARGET}.pro;
 	echo "RC_FILE = ${RC}";
 
 	${QMAKE} ${SPEC}

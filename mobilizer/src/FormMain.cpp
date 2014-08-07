@@ -28,6 +28,7 @@
 
 #include <QtGui>
 #include <NaraGui>
+#include <NaraPg>
 #include "_.h"
 #include "DialogLoadXmlToDb.h"
 #include "DialogDoc.h"
@@ -39,29 +40,31 @@
 #include "GridTarif.h"
 #include "WidgetNumber.h"
 
+const char * FormMain::m_settings_geometry_ident = "formmain_geometry",
+		   * FormMain::m_settings_state_ident = "formmain_state";
+
 FormMain::FormMain()
 	: QMainWindow(), m_gridWidgetMenuAction( 0 ), m_actionPrint( 0 ), m_actionToPdf( 0 )
 {
 	setWindowIcon( QIcon(":/main_icon.png") );
 	createActions();
 	createToolBar();
+	createMessageDock();
 	createMainMenu();
 	createWidgets();
 
-	QRect screen = QApplication::desktop()->screenGeometry();
-    resize( screen.width() / 3 * 2, screen.height() / 3 * 2 );
+	QSettings s;
+
+	restoreGeometry( s.value( m_settings_geometry_ident ).toByteArray() );
+	restoreState( s.value( m_settings_state_ident ).toByteArray() );
 }
 
 FormMain::~FormMain()
 {
 	QSettings s;
 
-	    //s.beginGroup("map");
-	//s.setValue("show_geo_grid", actionToggleGeoGrid->isChecked() );
-	//s.endGroup();
-
-	s.setValue("formmain_geometry", saveGeometry() );
-	s.setValue("formmain_state", saveState() );
+	s.setValue( m_settings_geometry_ident, saveGeometry() );
+	s.setValue( m_settings_state_ident, saveState() );
 
 }
 
@@ -99,14 +102,32 @@ FormMain::createActions()
 void
 FormMain::createToolBar()
 {
-	QToolBar * actionsToolBar = addToolBar("Действия");
-	actionsToolBar->setIconSize( QSize( 64, 64 ) );
-	actionsToolBar->setObjectName("ActionsToolBar");
+	m_actionsToolBar = addToolBar("Панель &действий");
+	m_actionsToolBar->setIconSize( QSize( 64, 64 ) );
+	m_actionsToolBar->setObjectName("ActionsToolBar");
 
-	actionsToolBar->addAction( m_actionNewNumber );
-	actionsToolBar->addAction( m_actionXmlToDb );
-	actionsToolBar->addAction( m_actionDocOrder );
-	actionsToolBar->addAction( m_actionDocNote );
+	m_actionsToolBar->addAction( m_actionNewNumber );
+	m_actionsToolBar->addAction( m_actionXmlToDb );
+	m_actionsToolBar->addAction( m_actionDocOrder );
+	m_actionsToolBar->addAction( m_actionDocNote );
+}
+
+void
+FormMain::createMessageDock()
+{
+	m_dockMessage = new QDockWidget("Сообщения", this );
+	m_dockMessage->setObjectName("DockMessage");
+
+	TextEdit * editMessage = new TextEdit( m_dockMessage );
+
+	m_dockMessage->setWidget( editMessage );
+
+	PgQuery::setTextEdit( editMessage );
+
+	addDockWidget( Qt::BottomDockWidgetArea, m_dockMessage );
+
+
+	    //menuView->addAction( dock->toggleViewAction() );
 }
 
 void
@@ -133,6 +154,8 @@ FormMain::createMainMenu()
 	connect( m_menuFile, SIGNAL( aboutToHide() ), SLOT( aboutToHideMenuFile() ) );
 
 	QMenu * menuView = menuBar()->addMenu("&Вид");
+	menuView->addAction( m_actionsToolBar->toggleViewAction() );
+	menuView->addAction( m_dockMessage->toggleViewAction() );
 
 	QMenu * menuData = menuBar()->addMenu("&Данные");
 	m_actionDataTarif = menuData->addAction( QIcon(":/ruble.png"), "&Тарифные планы", this, SLOT( gridTarif() ), Qt::CTRL + Qt::Key_T );

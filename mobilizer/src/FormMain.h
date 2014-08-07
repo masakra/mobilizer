@@ -43,10 +43,15 @@ class FormMain : public QMainWindow
 	private:
 		WidgetNumber * m_widgetNumber;
 
+		QToolBar * m_actionsToolBar;
+
+		QDockWidget * m_dockMessage;
+
 		void createWidgets();
 		void createActions();
 		void createToolBar();
 		void createMainMenu();
+		void createMessageDock();
 
 		QAction * m_actionDataTarif,
 				* m_actionNewNumber,
@@ -60,6 +65,9 @@ class FormMain : public QMainWindow
 		QAction * m_gridWidgetMenuAction,
 				* m_actionPrint,
 				* m_actionToPdf;
+
+		static const char * m_settings_geometry_ident,
+						  * m_settings_state_ident;
 
 	private Q_SLOTS:
 		void newNumber();

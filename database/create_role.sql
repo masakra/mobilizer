@@ -8,6 +8,7 @@ GRANT USAGE ON SCHEMA "erp" TO "mobi_user";
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON "mobi"."number" TO "mobi_user";
 GRANT SELECT, INSERT, UPDATE, DELETE ON "mobi"."tarif" TO "mobi_user";
+GRANT SELECT, UPDATE ON SEQUENCE "mobi"."tarif_id_seq" TO "mobi_user";
 GRANT SELECT, INSERT, UPDATE, DELETE ON "mobi"."montly" TO "mobi_user";
 GRANT SELECT, INSERT, UPDATE, DELETE ON "mobi"."detail" TO "mobi_user";
 
