@@ -45,7 +45,6 @@ class DialogLoadXmlToDb : public QDialog
 	private:
 		void createWidgets();
 
-		//QLineEdit * m_editPath;
 		QListWidget * m_listPath;
 
 		EditMonth * m_editMonth;

@@ -32,7 +32,7 @@
 DialogLoadXmlToDb::DialogLoadXmlToDb( QWidget * parent )
 	: QDialog( parent )
 {
-	setWindowTitle("Загрузка данных из XML файла");
+	setWindowTitle("Загрузка данных из XML файлов");
 	createWidgets();
 	resize( 500, 20 );
 }
@@ -73,7 +73,6 @@ DialogLoadXmlToDb::createWidgets()
 	layout->addWidget( labelMonth, 1, 0, Qt::AlignRight );
 	layout->addLayout( layoutMonth, 1, 1 );
 	layout->addWidget( buttonBox, 2, 0, 1, 2 );
-
 }
 
 void
@@ -81,7 +80,7 @@ DialogLoadXmlToDb::openXmlFile()
 {
 	QSettings s;
 
-	static const QString lastXmlDir = "last_xml_dir";
+	static const char * lastXmlDir = "last_xml_dir";
 
 	const QStringList fileNames = QFileDialog::getOpenFileNames( this, "XML-файлы для загрузки в базу данных",
 			s.value( lastXmlDir, QDir::homePath() ).toString(),
