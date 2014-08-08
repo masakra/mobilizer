@@ -78,7 +78,7 @@ Doc::detailTable( const Month & month, qreal thresh ) const
 	q.prepare("SELECT "
 			"d.caption, "
 			"common.fio( cp.fam, cp.nam, cp.pat ), "
-			"m.bill - t.\"limit\" "
+			"m.bill - n.\"limit\" "
 		"FROM "
 			"\"mobi\".\"number\" n "
 		"LEFT OUTER JOIN "
@@ -95,7 +95,7 @@ Doc::detailTable( const Month & month, qreal thresh ) const
 		"WHERE "
 			"m.month = :month "
 		"AND m.year = :year "
-		"AND m.bill - t.\"limit\" > :thresh ");
+		"AND m.bill - n.\"limit\" > :thresh ");
 	q.bindValue(":month", month.month() );
 	q.bindValue(":year", month.year() );
 	q.bindValue(":thresh", thresh );
