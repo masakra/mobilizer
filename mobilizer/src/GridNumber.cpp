@@ -33,11 +33,16 @@
 #include "DialogNumber.h"
 #include "DocDetail.h"
 #include "EditMonth.h"
+#include "ModelNumber.h"
 #include "WidgetNumber.h"
 
 GridNumber::GridNumber( QWidget * parent, WidgetNumber * widgetNumber )
 	: GridWidget( parent ), m_widgetNumber( widgetNumber ), m_orderBy( 1 )
 {
+	delete m_model;
+
+	setModel( m_model = new ModelNumber( this ) );
+
 	horizontalHeader()->setClickable( true );
 	horizontalHeader()->setSortIndicatorShown( true );
 	connect( horizontalHeader(), SIGNAL( sectionClicked( int ) ), SLOT( columnClicked( int ) ) );
@@ -84,9 +89,12 @@ GridNumber::refresh( const QVariant & key )
 			"p.caption, "						// 2 erp.post.caption - должность
 			"d.caption, "						// 3 erp.division.caption - отдел
 			"t.caption, "						// 4 mobi.tarif.caption - тариф
-			"to_char( n.\"limit\", %1), "		// 5
-			"to_char( m.bill, %1), "			// 6
-			"to_char( m.bill - t.\"limit\", %1), "		// 7
+			//"to_char( n.\"limit\", %1), "		// 5
+			//"to_char( m.bill, %1), "			// 6
+			//"to_char( m.bill - n.\"limit\", %1), "		// 7
+			"n.limit, "
+			"m.bill, "
+			"m.bill - n.limit, "
 			"c.rcap "							// 8
 		"FROM "
 			"\"mobi\".\"number\" n "
@@ -109,10 +117,10 @@ GridNumber::refresh( const QVariant & key )
 			"FROM "
 				"\"mobi\".\"montly\" "
 			"WHERE "
-				"month = %2 AND year = %3 ) m ON n.number = m.number "
+				"month = %1 AND year = %2 ) m ON n.number = m.number "
 		"ORDER BY "
-			"%4 %5 ")
-			.arg( "'FM9999999999999990D00L'" )
+			"%3 %4 ")
+			//.arg( "'FM9999999999999990D00L'" )
 			.arg( m_widgetNumber->month().month() )
 			.arg( m_widgetNumber->month().year() )
 			.arg( qAbs( m_orderBy ) )

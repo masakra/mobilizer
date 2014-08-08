@@ -109,7 +109,7 @@ DocDetail::table( const QString & number, const Month & month )
 				.arg( q.value( 3 ).toString() )
 				.arg( q.value( 4 ).toString() )
 				.arg( q.value( 5 ).toString() )
-				.arg( q.value( 6 ).toDouble(), 0, 'f', 2 );
+				.arg( QString("%L1").arg( q.value( 6 ).toDouble(), 0, 'f', 2 ) );
 
 			sum += q.value( 6 ).toDouble();
 		}
@@ -121,7 +121,7 @@ DocDetail::table( const QString & number, const Month & month )
 			"<td align=right bgcolor=white><b>%2</b></td>"
 		"</tr>")
 			.arg( q.size() )
-			.arg( sum, 0, 'f', 2 );
+			.arg( QString("%L1").arg( sum, 0, 'f', 2 ) );
 	}
 
 	return html.append("</table>");

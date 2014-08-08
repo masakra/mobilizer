@@ -114,8 +114,9 @@ Doc::detailTable( const Month & month, qreal thresh ) const
 				"</td></tr>")
 			.arg( q.value( 0 ).toString() )
 			.arg( q.value( 1 ).toString() )
-			.arg( q.value( 2 ).toDouble(), 0, 'f', 2 );
+			.arg( QString("%L1").arg( q.value( 2 ).toDouble(), 0, 'f', 2 ) );
 	}
 
 	return html.append("</table>");
 }
+

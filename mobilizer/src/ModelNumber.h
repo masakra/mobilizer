@@ -24,51 +24,25 @@
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
 
-/*! \class GridNumber
+/*! \class ModelNumber
  *
  * \brief 
  */
 
-#ifndef GRIDNUMBER_H
-#define GRIDNUMBER_H
+#ifndef MODELNUMBER_H
+#define MODELNUMBER_H
 
-#include "GridWidget.h"
-#include <QTimer>
+#include <QSqlQueryModel>
 
-class WidgetNumber;
-
-class GridNumber : public GridWidget
+class ModelNumber : public QSqlQueryModel
 {
 	Q_OBJECT
 
-	private:
-		WidgetNumber * m_widgetNumber;
-
-		int m_orderBy;
-
-		QTimer m_timerSearch;
-		QLabel * m_labelSearch,
-			   * m_labelSearchText;
-
-	private Q_SLOTS:
-		void update();
-		void del();
-		void columnClicked( int logicalIndex );
-		void detail();
-
 	protected:
-		void keyPressEvent( QKeyEvent * event );
+		QVariant data( const QModelIndex & index, int role = Qt::DisplayRole ) const;
 
 	public:
-		GridNumber( QWidget * parent, WidgetNumber * widgetNumber );
-
-		QMenu * menu();	// virtual
-
-	public Q_SLOTS:
-		void refresh( const QVariant & key = QVariant() );
-
-	Q_SIGNALS:
-		void rowCountChanged( int count ) const;
+		ModelNumber( QObject * parent );
 };
 
 #endif

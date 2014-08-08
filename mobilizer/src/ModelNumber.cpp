@@ -24,52 +24,35 @@
  *   OTHER DEALINGS IN THE SOFTWARE.                                       *
  ***************************************************************************/
 
-/*! \class GridNumber
- *
- * \brief 
- */
+#include "ModelNumber.h"
 
-#ifndef GRIDNUMBER_H
-#define GRIDNUMBER_H
+//#include <QtGui>
+//
+#include <QDebug>
 
-#include "GridWidget.h"
-#include <QTimer>
-
-class WidgetNumber;
-
-class GridNumber : public GridWidget
+ModelNumber::ModelNumber( QObject * parent )
+	: QSqlQueryModel( parent )
 {
-	Q_OBJECT
+}
 
-	private:
-		WidgetNumber * m_widgetNumber;
+QVariant
+ModelNumber::data( const QModelIndex & index, int role ) const
+{
+	const int col = index.column();
 
-		int m_orderBy;
+	if ( col == 0 && role == Qt::TextAlignmentRole )
+		return Qt::AlignCenter;
 
-		QTimer m_timerSearch;
-		QLabel * m_labelSearch,
-			   * m_labelSearchText;
+	if ( col == 5 || col == 6 || col == 7 ) {
+		if ( role == Qt::TextAlignmentRole )
+			return Qt::AlignRight + Qt::AlignVCenter;
 
-	private Q_SLOTS:
-		void update();
-		void del();
-		void columnClicked( int logicalIndex );
-		void detail();
+		if ( role == Qt::DisplayRole && index.isValid() ) {
+			const double d = QSqlQueryModel::data( index, role ).toDouble();
+			return QString("%L1").arg( d, 0, 'f', 2 );
+		}
+	}
 
-	protected:
-		void keyPressEvent( QKeyEvent * event );
-
-	public:
-		GridNumber( QWidget * parent, WidgetNumber * widgetNumber );
-
-		QMenu * menu();	// virtual
-
-	public Q_SLOTS:
-		void refresh( const QVariant & key = QVariant() );
-
-	Q_SIGNALS:
-		void rowCountChanged( int count ) const;
-};
-
-#endif
+	return QSqlQueryModel::data( index, role );
+}
 
