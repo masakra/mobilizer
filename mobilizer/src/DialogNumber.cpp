@@ -213,7 +213,8 @@ DialogNumber::save()
 				values << m_listManExists->currentItem()->data( Qt::UserRole ).toString();
 			} else {	// pseudo
 				fields << "pseudo";
-				values << "'" + m_editPseudo->text().trimmed();
+				values << "'" + m_editPseudo->text().trimmed().replace("'", "`") + "'";
+
 			}
 			// Тариф
 			fields << "tarif_id";
@@ -276,6 +277,7 @@ DialogNumber::save()
 				"start = default, device = default, comm = NULL";
 		}
 
+		qDebug() << "UPDATE \"mobi\".\"number\" SET " + pairs.join(",") + " WHERE number = :number";
 		q.prepare("UPDATE \"mobi\".\"number\" SET " + pairs.join(",") + " WHERE number = :number");
 		q.bindValue(":number", m_key );
 	}

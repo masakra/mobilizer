@@ -1,7 +1,7 @@
 #!/bin/sh
 
 TARGET="mobilizer"
-VERSION="0.1.4"
+VERSION="0.1.5"
 MODULES="sql xml"
 
 if [ ${OS} ]	# На Win* выдает что-то типа Windows_NT, на других платформах не определена
