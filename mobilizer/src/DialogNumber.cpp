@@ -31,6 +31,9 @@
 #include <NaraPg>
 #include "SpinLimit.h"
 
+#define TARIF_ID_IDX 0
+#define TARIF_LIMIT_IDX 1
+
 DialogNumber::DialogNumber( QWidget * parent )
 	: Dialog( parent )
 {
@@ -218,7 +221,7 @@ DialogNumber::save()
 			}
 			// Тариф
 			fields << "tarif_id";
-			values << m_comboTarif->currentData().toList()[ 0 ].toString();
+			values << m_comboTarif->currentData( TARIF_ID_IDX ).toString();
 			// Лимит
 			fields << "\"limit\"";
 			values << QString::number( m_spinLimit->value() );
@@ -259,7 +262,7 @@ DialogNumber::save()
 				pairs << QString("people_id = NULL, pseudo = '%1'").arg( m_editPseudo->text().trimmed() );
 			}
 			// Тариф
-			pairs << QString("tarif_id = %1").arg( m_comboTarif->currentData().toList()[ 0 ].toString() );
+			pairs << QString("tarif_id = %1").arg( m_comboTarif->currentData( TARIF_ID_IDX ).toString() );
 			// Лимит
 			pairs << QString("\"limit\" = %1").arg( m_spinLimit->value() );
 			// IATA код города
@@ -343,7 +346,7 @@ void
 DialogNumber::tarifChanged( int index )
 {
 	const QVariant itemData = m_comboTarif->itemData( index );
-	m_spinLimit->setValue( itemData.toList()[ 1 ].toDouble() );
+	m_spinLimit->setValue( itemData.toList()[ TARIF_LIMIT_IDX ].toDouble() );
 }
 
 void
@@ -420,13 +423,7 @@ DialogNumber::fetchData()		// virtual
 		m_radioManPseudo->setChecked( true );
 	}
 
-
-	//m_comboTarif->setCurrentData( q.value( 9 ) );
-	for ( int i = 0; i < m_comboTarif->count(); ++i )
-		if ( m_comboTarif->itemData( i ).toList()[ 0 ] == q.value( 9 ) )	// toList()[ 0 ] is ID
-			m_comboTarif->setCurrentIndex( i );
-
-
+	m_comboTarif->setCurrentData( q.value( 9 ), TARIF_ID_IDX );
 	m_spinLimit->setValue( q.value( 10 ).toDouble() );
 	m_comboCity->setCurrentData( q.value( 11 ) );
 	m_editStart->setDate( q.value( 12 ).toDate() );

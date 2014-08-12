@@ -89,12 +89,9 @@ GridNumber::refresh( const QVariant & key )
 			"p.caption, "						// 2 erp.post.caption - должность
 			"d.caption, "						// 3 erp.division.caption - отдел
 			"t.caption, "						// 4 mobi.tarif.caption - тариф
-			//"to_char( n.\"limit\", %1), "		// 5
-			//"to_char( m.bill, %1), "			// 6
-			//"to_char( m.bill - n.\"limit\", %1), "		// 7
-			"n.limit, "
-			"m.bill, "
-			"m.bill - n.limit, "
+			"n.limit, "							// 5
+			"m.bill, "							// 6
+			"m.bill - n.limit, "				// 7
 			"c.rcap "							// 8
 		"FROM "
 			"\"mobi\".\"number\" n "
