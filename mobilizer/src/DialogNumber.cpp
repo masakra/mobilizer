@@ -277,7 +277,6 @@ DialogNumber::save()
 				"start = default, device = default, comm = NULL";
 		}
 
-		qDebug() << "UPDATE \"mobi\".\"number\" SET " + pairs.join(",") + " WHERE number = :number";
 		q.prepare("UPDATE \"mobi\".\"number\" SET " + pairs.join(",") + " WHERE number = :number");
 		q.bindValue(":number", m_key );
 	}
@@ -287,6 +286,10 @@ DialogNumber::save()
 			m_key = q.value( 0 );
 
 		db.commit();
+
+		QSettings s;
+		s.setValue("last_city_iata", m_comboCity->currentData() );
+
 		accept();
 	} else
 		db.rollback();
@@ -331,6 +334,8 @@ DialogNumber::fillComboCity()
 		while ( q.next() )
 			m_comboCity->addItem( q.value( 1 ).toString(), q.value( 0 ) );
 
+		QSettings s;
+		m_comboCity->setCurrentData( s.value("last_city_iata", "ARH") );
 	}
 }
 
