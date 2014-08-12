@@ -76,7 +76,10 @@ Doc::detailTable( const Month & month, qreal thresh ) const
 	PgQuery q;
 
 	q.prepare("SELECT "
-			"d.caption, "
+			"CASE WHEN b.chief IS NULL "
+				"THEN p.caption "
+				"ELSE 'Начальник - ' || b.caption "
+			"END, "
 			"common.fio( cp.fam, cp.nam, cp.pat ), "
 			"m.bill - n.\"limit\" "
 		"FROM "
@@ -87,7 +90,10 @@ Doc::detailTable( const Month & month, qreal thresh ) const
 			"\"erp\".\"employee\" e ON n.people_id = e.people_id "
 		"LEFT OUTER JOIN "
 			"\"erp\".\"division\" d ON e.division_abbr = d.abbr "
-
+		"LEFT OUTER JOIN "
+			"\"erp\".\"division\" b ON n.people_id = b.chief "
+		"LEFT OUTER JOIN "
+			"\"erp\".\"post\" p ON e.post_id = p.id "
 		"LEFT OUTER JOIN "
 			"\"mobi\".\"tarif\" t ON n.tarif_id = t.id "
 		"LEFT OUTER JOIN "

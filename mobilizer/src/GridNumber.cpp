@@ -86,8 +86,14 @@ GridNumber::refresh( const QVariant & key )
 				"THEN n.pseudo "
 				"ELSE common.fio( cp.fam, cp.nam, cp.pat ) "
 			"END, "
-			"p.caption, "						// 2 erp.post.caption - должность
-			"d.caption, "						// 3 erp.division.caption - отдел
+			"CASE WHEN b.chief IS NULL "		// 2 erp.post.caption - должность или 'Начальник'
+				"THEN p.caption "
+				"ELSE 'Начальник' "
+			"END, "
+			"CASE WHEN b.chief IS NULL "		// 3 erp.division.caption - отдел
+				"THEN d.caption "
+				"ELSE b.caption "
+			"END, "
 			"t.caption, "						// 4 mobi.tarif.caption - тариф
 			"n.limit, "							// 5
 			"m.bill, "							// 6
@@ -101,6 +107,8 @@ GridNumber::refresh( const QVariant & key )
 			"\"erp\".\"employee\" e ON n.people_id = e.people_id "
 		"LEFT OUTER JOIN "
 			"\"erp\".\"division\" d ON e.division_abbr = d.abbr "
+		"LEFT OUTER JOIN "
+			"\"erp\".\"division\" b ON n.people_id = b.chief "	// boss
 		"LEFT OUTER JOIN "
 			"\"erp\".\"post\" p ON e.post_id = p.id "
 		"LEFT OUTER JOIN "
@@ -117,7 +125,6 @@ GridNumber::refresh( const QVariant & key )
 				"month = %1 AND year = %2 ) m ON n.number = m.number "
 		"ORDER BY "
 			"%3 %4 ")
-			//.arg( "'FM9999999999999990D00L'" )
 			.arg( m_widgetNumber->month().month() )
 			.arg( m_widgetNumber->month().year() )
 			.arg( qAbs( m_orderBy ) )
