@@ -80,7 +80,10 @@ Doc::detailTable( const Month & month, qreal thresh ) const
 				"THEN p.caption "
 				"ELSE 'Начальник - ' || b.caption "
 			"END, "
-			"common.fio( cp.fam, cp.nam, cp.pat ), "
+			"CASE WHEN n.people_id IS NULL "
+				"THEN n.pseudo "
+				"ELSE common.fio( cp.fam, cp.nam, cp.pat ) "
+			"END, "
 			"m.bill - n.\"limit\" "
 		"FROM "
 			"\"mobi\".\"number\" n "
@@ -101,7 +104,9 @@ Doc::detailTable( const Month & month, qreal thresh ) const
 		"WHERE "
 			"m.month = :month "
 		"AND m.year = :year "
-		"AND m.bill - n.\"limit\" > :thresh ");
+		"AND m.bill - n.\"limit\" > :thresh "
+		"ORDER BY "
+			"3 DESC");		// overhead
 	q.bindValue(":month", month.month() );
 	q.bindValue(":year", month.year() );
 	q.bindValue(":thresh", thresh );
